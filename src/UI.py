@@ -1,0 +1,5 @@
+print("Enter start datee in YYYY/MM/DD format")
+start = input()
+print("Enter end date")
+end = input()
+print(start.strip().split("/"), end.strip().split("/"))
