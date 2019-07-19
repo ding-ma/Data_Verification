@@ -3,7 +3,6 @@ import datetime
 import os
 import shutil
 
-import openpyxl
 import pandas as pd
 
 path = os.getcwd()
@@ -99,11 +98,20 @@ def getPerMonth(lst, polluant):
 
         if polluant is 1:
             df2 = pd.DataFrame(data={"Date(DD/MM/YYYY)": datelst, "Concentration": PM25lst, "Hour(UTC)": hourlst})
-            writer = pd.ExcelWriter("monthfiles/NO2/" + startDate.strftime("%Y%m") + "_" + stationID + "NO2.xlsx",
-                                    engine=openpyxl)
-            df2.to_excel(writer, sheet_name="Sheet1")
-            writer.save()
+            df2.to_csv("monthfiles/PM25/" + startDate.strftime("%Y%m") + "_" + stationID + "PM25.csv", sep=",",
+                       index=False)
 
+        if polluant is 2:
+            df1 = pd.DataFrame(data={"Date(DD/MM/YYYY)": datelst, "Concentration": NO2lst, "Hour(UTC)": hourlst})
+            df1.to_csv("monthfiles/NO2/" + startDate.strftime("%Y%m") + "_" + stationID + "NO2.csv", sep=",",
+                       index=False)
+
+        if polluant is 3:
+            df = pd.DataFrame(data={"Date(DD/MM/YYYY)": datelst, "Concentration": O3lst, "Hour(UTC)": hourlst})
+            df.to_csv("monthfiles/O3/" + startDate.strftime("%Y%m") + "_" + stationID + "O3.csv", sep=",", index=False)
+
+        monthtemplate = pd.DataFrame(data={"Date(DD/MM/YYYY)": datelst, "Hour(UTC)": hourlst})
+        monthtemplate.to_csv("monthTemplate.csv", sep=",", index=False)
         stationlst.clear()
         datelst.clear()
         hourlst.clear()
