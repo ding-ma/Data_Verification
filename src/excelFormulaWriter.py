@@ -19,11 +19,11 @@ for i in range(0, numberRow - 3):
     for o in range(3, numberColumn):
         avg_3h[get_column_letter(o) + str(i + 4)] = '=IF((COUNTA(raw!' + get_column_letter(o) + str(
             i + 2) + ':' + get_column_letter(o) \
-                                                    + str(i + 4) + '))>1,(AVERAGE(ROUND(raw!' + get_column_letter(
+                                                    + str(i + 4) + '))>1,ROUND(AVERAGE(ROUND(raw!' + get_column_letter(
             o) + str(i + 2) + \
                                                     ',0),ROUND(raw!' + get_column_letter(o) + str(i + 3) + \
                                                     ',0),ROUND(raw!' + get_column_letter(o) + str(
-            i + 4) + ',0))),\" \")'
+            i + 4) + ',0)),0),\" \")'
 
 wb.save("test.xlsx")
 
