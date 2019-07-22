@@ -1,19 +1,21 @@
-import os
-import pandas as pd
-import os
+from openpyxl import Workbook
+from openpyxl.formatting.rule import CellIsRule
+from openpyxl.styles import PatternFill
 
-import pandas as pd
+wb = Workbook()
+ws = wb.active
+RedFill = PatternFill(bgColor="4A009E")
+# Create fill
+# start_color='EE1111',end_color="EE1111",fill_type='solid'
 
-# convert csv to excel
-# todo add date recognition for files
-for files in os.listdir("output"):
-    csvIn = pd.read_csv("output/" + files, delimiter=",")
-    excelout = pd.ExcelWriter("excel_output/" + files.split(".")[0] + ".xlsx", engine='xlsxwriter')
-    csvIn.to_excel(excelout, sheet_name="Original Data", index=False)
-    csvIn.to_excel(excelout, sheet_name="3h Average", index=False)
-    excelout.save()
-# single file
-# path = "excel_output/NO2_2019_06.xlsx"
-# book = openpyxl.load_workbook(path)
-# avg_3h = book['3h AVG']
-# print(avg_3h['A1'].value)
+# Add a two-color scale
+
+# Add a conditional formatting based on a cell comparison
+# addCellIs(range_string, operator, formula, stopIfTrue, wb, font, border, fill)
+# Format if cell is less than 'formula'
+
+# Format if cell is between 'formula'
+ws.conditional_formatting.add('D2:D10',
+                              CellIsRule(operator='between', formula=['1', '5'], stopIfTrue=True, fill=RedFill))
+
+wb.save("test.xlsx")

@@ -6,6 +6,8 @@ import time
 
 import openpyxl
 import pandas as pd
+from openpyxl.formatting.rule import CellIsRule
+from openpyxl.styles import PatternFill
 from openpyxl.utils.cell import get_column_letter
 
 s = time.time()
@@ -197,6 +199,50 @@ for excelFiles in filelstExcel:
     numberRow = rawdata.max_row
     numberColumn = rawdata.max_column
 
+    PurpleFill = PatternFill(bgColor="56007a")
+    RedFill = PatternFill(bgColor="EE1111")
+    YellowFill = PatternFill(bgColor="EECE00")
+    GreenFill = PatternFill(bgColor="00CE15")
+
+    # Fill colors
+    for sheets in wb.worksheets:
+        if excelFiles.startswith("PM25"):
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='greaterThanOrEqual', formula=['50'], stopIfTrue=True,
+                                                         fill=PurpleFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=['35', '49.9999'], stopIfTrue=True,
+                                                         fill=RedFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=['30', '34.9999'], stopIfTrue=True,
+                                                         fill=YellowFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=['25', '29.9999'], stopIfTrue=True,
+                                                         fill=GreenFill))
+
+        if excelFiles.startswith("O3"):
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='greaterThanOrEqual', formula=['100'],
+                                                         stopIfTrue=True,
+                                                         fill=PurpleFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=['85', '99.9999'], stopIfTrue=True,
+                                                         fill=RedFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=['72', '84.9999'], stopIfTrue=True,
+                                                         fill=YellowFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=['62', '71.9999'], stopIfTrue=True,
+                                                         fill=GreenFill))
+
+            # todo add for NO2
+
     # copies row/column from old set
     for r in range(1, numberRow + 1):
         for c in range(1, 3):
@@ -225,20 +271,3 @@ for excelFiles in filelstExcel:
 e = time.time()
 print(e - s)
 print("Job done, see --> " + path + "/excel_output")
-
-# if polluant is 1:
-#     df2 = pd.DataFrame(data={"Date(DD/MM/YYYY)": datelst, "Concentration": PM25lst, "Hour(UTC)": hourlst})
-#     df2.to_excel("monthfiles/PM25/" + startDate.strftime("%Y%m") + "_" + stationID + "PM25.xlsx", sep=",",
-#                  index=False)
-#
-# if polluant is 2:
-#     df1 = pd.DataFrame(data={"Date(DD/MM/YYYY)": datelst, "Concentration": NO2lst, "Hour(UTC)": hourlst})
-#     df1.to_excel("monthfiles/NO2/" + startDate.strftime("%Y%m") + "_" + stationID + "NO2.xlsx", sep=",",
-#                  index=False)
-#
-# if polluant is 3:
-#     df = pd.DataFrame(data={"Date(DD/MM/YYYY)": datelst, "Concentration": O3lst, "Hour(UTC)": hourlst})
-#     df.to_excel("monthfiles/O3/" + startDate.strftime("%Y%m") + "_" + stationID + "O3.xlsx", sep=",", index=False)
-#
-#     monthtemplate = pd.DataFrame(data={"Date(DD/MM/YYYY)": datelst, "Hour(UTC)": hourlst})
-#     monthtemplate.to_excel("monthTemplate.xlsx", sep=",", index=False)
