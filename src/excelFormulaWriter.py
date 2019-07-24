@@ -55,10 +55,9 @@ PM25_lstDuplicate = []
 for region in list_duplicates(PM25_StationRegionlst):
     PM25_lstDuplicate.append(region[1])
 
-print(len(PM25_lstDuplicate))
 for excelFiles in os.listdir("excel_output"):
 
-    PurpleFill = PatternFill(bgColor="56007a")
+    PurpleFill = PatternFill(bgColor="9700d6")
     RedFill = PatternFill(bgColor="EE1111")
     YellowFill = PatternFill(bgColor="EECE00")
     GreenFill = PatternFill(bgColor="00CE15")
@@ -128,8 +127,23 @@ for excelFiles in os.listdir("excel_output"):
                                               CellIsRule(operator='between', formula=['62', '71.9999'], stopIfTrue=True,
                                                          fill=GreenFill))
 
-            # todo add for NO2
+        if excelFiles.startswith("NO2"):
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='greaterThanOrEqual', formula=['90'],
+                                                         stopIfTrue=True,
+                                                         fill=PurpleFill))
 
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=['75', '89.9999'], stopIfTrue=True,
+                                                         fill=RedFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=['60', '74.9999'], stopIfTrue=True,
+                                                         fill=YellowFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=['45', '59.9999'], stopIfTrue=True,
+                                                         fill=GreenFill))
     # formulae for 3h avg
     for i in range(0, numberRow - 3):
         for o in range(3, numberColumn + 1):
@@ -144,31 +158,16 @@ for excelFiles in os.listdir("excel_output"):
 
     # regional max
     if excelFiles.startswith("PM25"):
-        print(excelFiles)
         for r in range(4, numberRow + 1):
             for c, data in zip(range(3, len(PM25indexlist) + 3), PM25_lstDuplicate):
                 sData = data[0] + 3
                 endData = data[-1] + 3
-                print(get_column_letter(c), r, sData, endData)
                 regionMax[get_column_letter(c) + str(r)] = '=MAX(\'3h Average\'!' \
                                                            + get_column_letter(sData) \
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) \
                                                            + str(r) + ')'
 
-                # print(get_column_letter(c),c,get_column_letter(r),r)
-
-        #           s= region[1][0]+3
-        #           e= region[1][-1]+3
-        #           print(s,e)
-        #           print(get_column_letter(s),get_column_letter(e),o,r)
-        #           print("--")
-        #           # except:
-        #           #     PM25indexlist[-1] = PM25indexlist[i+1]
-        #           #     print(PM25indexlist[i],PM25indexlist[i + 1])
-        #           #     continue
-
-        # #
     wb.save("excel_output/" + excelFiles)
 
 e = time.time()
