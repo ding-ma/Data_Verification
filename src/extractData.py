@@ -215,7 +215,9 @@ for files in filelstCSV:
     csvIn = pd.read_csv("output/" + files, delimiter=",")
     excelout = pd.ExcelWriter("excel_output/" + files.split(".")[0] + ".xlsx", engine='xlsxwriter')
     csvIn.to_excel(excelout, sheet_name="Original Data", index=False)
-    csvIn.to_excel(excelout, sheet_name="3h Average", index=False)
+    wb = excelout.book
+    ws = wb.add_worksheet('3h Average')
+    ws1 = wb.add_worksheet('Regional Hour Max')
     excelout.save()
 
 for excelFiles in filelstExcel:
