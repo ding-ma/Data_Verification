@@ -10,6 +10,32 @@ from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles import PatternFill
 from openpyxl.utils.cell import get_column_letter
 
+######################################################
+# to change conditional formatting
+
+# PM2.5
+# above 50ppb
+greaterOrEqual_PM25 = ['50']
+
+# between 35 and 50 ppb
+secondHighest_PM25 = ['35', '49.9999']
+
+# between 30 and 35 ppb
+thirdHighest_PM25 = ['30', '34.9999']
+
+# between 25 and 30 ppb
+lowest_PM25 = ['25', '29.9999']
+# end of PM2.5
+
+# O3
+greaterOrEqual_O3 = ['100']
+secondHighest_O3 = ['85', '99.9999']
+thirdHighest_O3 = ['72', '84.9999']
+lowest_O3 = ['62', '71.9999']
+# end of O3
+
+
+#####################################################
 s = time.time()
 path = os.getcwd()
 
@@ -41,19 +67,19 @@ PB_NAPS_dict = dict(zip(EC_Code, NAPS_ID))
 
 # CMVQ
 # 50126
-print("Enter the start date in YYYY/MM/DD followed by enter")
-start = input()
-print("Enter the end date in YYYY/MM/DD followed by enter ")
-end = input()
+# print("Enter the start date in YYYY/MM/DD followed by enter")
+# start = input()
+# print("Enter the end date in YYYY/MM/DD followed by enter ")
+# end = input()
+#
+# sdatelist = start.strip().split("/")
+# edatelist = end.strip().split("/")
+#
+# startDate = datetime.datetime(int(sdatelist[0]), int(sdatelist[1]), int(sdatelist[2]))
+# endDate = datetime.datetime(int(edatelist[0]), int(edatelist[1]), int(edatelist[2]))
 
-sdatelist = start.strip().split("/")
-edatelist = end.strip().split("/")
-
-startDate = datetime.datetime(int(sdatelist[0]), int(sdatelist[1]), int(sdatelist[2]))
-endDate = datetime.datetime(int(edatelist[0]), int(edatelist[1]), int(edatelist[2]))
-
-# startDate = datetime.datetime(2019, 6, 1)
-# endDate = datetime.datetime(2019, 6, 30)
+startDate = datetime.datetime(2019, 6, 1)
+endDate = datetime.datetime(2019, 6, 30)
 
 delta = endDate - startDate
 
@@ -75,6 +101,7 @@ hourlst = []
 O3lst = []
 NO2lst = []
 PM25lst = []
+
 stationsLstNO2 = open("stationsNO2.txt", "r").read().strip().split(",")
 stationsLstO3 = open("stationsO3.txt", "r").read().strip().split(",")
 stationsLstPM25 = open("stationsPM25.txt", "r").read().strip().split(",")
@@ -208,37 +235,39 @@ for excelFiles in filelstExcel:
     for sheets in wb.worksheets:
         if excelFiles.startswith("PM25"):
             sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='greaterThanOrEqual', formula=['50'], stopIfTrue=True,
-                                                         fill=PurpleFill))
-
-            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='between', formula=['35', '49.9999'], stopIfTrue=True,
-                                                         fill=RedFill))
-
-            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='between', formula=['30', '34.9999'], stopIfTrue=True,
-                                                         fill=YellowFill))
-
-            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='between', formula=['25', '29.9999'], stopIfTrue=True,
-                                                         fill=GreenFill))
-
-        if excelFiles.startswith("O3"):
-            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='greaterThanOrEqual', formula=['100'],
+                                              CellIsRule(operator='greaterThanOrEqual', formula=greaterOrEqual_PM25,
                                                          stopIfTrue=True,
                                                          fill=PurpleFill))
 
             sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='between', formula=['85', '99.9999'], stopIfTrue=True,
+                                              CellIsRule(operator='between', formula=secondHighest_PM25,
+                                                         stopIfTrue=True,
                                                          fill=RedFill))
 
             sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='between', formula=['72', '84.9999'], stopIfTrue=True,
+                                              CellIsRule(operator='between', formula=thirdHighest_PM25, stopIfTrue=True,
                                                          fill=YellowFill))
 
             sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='between', formula=['62', '71.9999'], stopIfTrue=True,
+                                              CellIsRule(operator='between', formula=lowest_PM25, stopIfTrue=True,
+                                                         fill=GreenFill))
+
+        if excelFiles.startswith("O3"):
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='greaterThanOrEqual', formula=greaterOrEqual_O3,
+                                                         stopIfTrue=True,
+                                                         fill=PurpleFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=secondHighest_O3, stopIfTrue=True,
+                                                         fill=RedFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=thirdHighest_O3, stopIfTrue=True,
+                                                         fill=YellowFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=lowest_O3, stopIfTrue=True,
                                                          fill=GreenFill))
 
             # todo add for NO2
