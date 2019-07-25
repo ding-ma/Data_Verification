@@ -3,7 +3,7 @@ import datetime
 import os
 import shutil
 import time
-from collections import defaultdict
+from collections import OrderedDict
 
 import openpyxl
 import pandas as pd
@@ -103,11 +103,16 @@ for i in range(delta.days + 1):
     listofDate.append((startDate + datetime.timedelta(days=i)).strftime("%Y%m%d"))
 
 
-def list_duplicates(seq):
-    tally = defaultdict(list)
-    for i, item in enumerate(seq):
-        tally[item].append(i)
-    return ((key, locs) for key, locs in tally.items())
+def list_duplicates(lst):
+    odict = OrderedDict()
+    returningOdict = OrderedDict()
+    for items in lst:
+        odict[items] = None
+
+    for idx, item in enumerate(odict):
+        indices = [i for i, x in enumerate(lst) if x == item]
+        returningOdict[item] = indices
+    return returningOdict
 
 
 # PM2.5 lists
@@ -123,17 +128,10 @@ for x in range(len(reader)):
     PM25_StationIDlst.append(pmID)
     PM25_StationRegionlst.append(pmRegion)
 
-tempsetPM25 = set()
-regionDictionaryPM25 = dict(zip(PM25_StationIDlst, PM25_StationRegionlst))
-for w in PM25_StationIDlst:
-    a = regionDictionaryPM25[w]
-    tempsetPM25.add(PM25_StationRegionlst.index(a))
+PM25_sortedDuplicated = list_duplicates(PM25_StationRegionlst)
 
-PM25indexlist = list(sorted(tempsetPM25))
-
-PM25_lstDuplicate = []
-for region in list_duplicates(PM25_StationRegionlst):
-    PM25_lstDuplicate.append(region[1])
+PM25indexlist = list(PM25_sortedDuplicated.keys())
+PM25_lstDuplicate = list(PM25_sortedDuplicated.values())
 
 ###
 
@@ -150,20 +148,11 @@ for q in range(len(Reader_O3)):
     O3_StationIDlist.append(o3ID)
     O3_StationRegionlst.append(o3Region)
 
-tempsetO3 = set()
-regionDictO3 = dict(zip(O3_StationIDlist, O3_StationRegionlst))
-for e in O3_StationIDlist:
-    E = regionDictO3[e]
-    tempsetO3.add(O3_StationRegionlst.index(E))
+O3_sortedDuplicate = list_duplicates(O3_StationRegionlst)
 
-O3Indexlist = list(sorted(tempsetO3))
+O3Indexlist = list(O3_sortedDuplicate.keys())
+O3_listDuplicate = list(O3_sortedDuplicate.values())
 
-O3_listDuplicate = []
-ll = []
-for r in list_duplicates(O3_StationRegionlst):
-    O3_listDuplicate.append(r[1])
-    ll.append([r[0]])
-print(ll)
 ####
 
 NO2File = open("StationNO2.csv", "r")
@@ -178,17 +167,10 @@ for a in range(len(reader_NO2)):
     NO2_stationIDlist.append(noID)
     NO2_stationRegionlst.append(noRegion)
 
-tempsetNO2 = set()
-regionDictNO2 = dict(zip(NO2_stationIDlist, NO2_stationRegionlst))
-for t in NO2_stationIDlist:
-    T = regionDictNO2[t]
-    tempsetNO2.add(NO2_stationRegionlst.index(T))
+NO2_sortedDuplicate = list_duplicates(NO2_stationRegionlst)
 
-NO2Indexlist = list(sorted(tempsetNO2))
-
-NO2_listDuplicate = []
-for y in list_duplicates(NO2_stationRegionlst):
-    NO2_listDuplicate.append(y[1])
+NO2Indexlist = list(NO2_sortedDuplicate.keys())
+NO2_listDuplicate = list(NO2_sortedDuplicate.values())
 
 ######
 stationlst = []
@@ -344,17 +326,17 @@ for excelFiles in filelstExcel:
                             for i, p in enumerate(PM25indexlist):
                                 if sheets == regionMax:
                                     # print(get_column_letter(i+3) + str(r), PM25_StationRegionlst[p])
-                                    sheets[get_column_letter(i + 3) + str(r)] = PM25_StationRegionlst[p]
+                                    sheets[get_column_letter(i + 3) + str(r)] = p
 
                         if excelFiles.startswith("O3"):  ##
                             for i, p in enumerate(O3Indexlist):
                                 if sheets == regionMax:
-                                    sheets[get_column_letter(i + 3) + str(r)] = O3_StationRegionlst[p]
+                                    sheets[get_column_letter(i + 3) + str(r)] = p
 
                         if excelFiles.startswith("NO2"):  ##
                             for i, p in enumerate(NO2Indexlist):
                                 if sheets == regionMax:
-                                    sheets[get_column_letter(i + 3) + str(r)] = NO2_stationRegionlst[p]
+                                    sheets[get_column_letter(i + 3) + str(r)] = p
 
                     if r is 2 or r is 3:
                         for allC in range(3, numberColumn + 1):
