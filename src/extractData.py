@@ -47,10 +47,14 @@ s = time.time()
 path = os.getcwd()
 
 directories = ["O3", "PM25", "NO2"]
-try:
+if os.path.exists(path + "/monthfiles"):
     shutil.rmtree(path + "/monthfiles")
-except:
-    pass
+
+basedirectories = ["excel_output", "monthfiles", "output"]
+for u in basedirectories:
+    if os.path.exists(path + "/" + u) is False:
+        os.mkdir(path + "/" + u)
+
 for i in directories:
     if not os.path.exists(path + "/monthfiles/"):
         os.mkdir(path + "/" + "monthfiles")
@@ -75,21 +79,21 @@ PB_NAPS_dict = dict(zip(EC_Code, NAPS_ID))
 
 # unix path : /fs/home/fs1/ords/oth/airq_central/frc002/Data/CAS/Observations/Station/
 
-# CMVQ
+# CMVQs
 # 50126
-# print("Enter the start date in YYYY/MM/DD followed by enter")
-# start = input()
-# print("Enter the end date in YYYY/MM/DD followed by enter ")
-# end = input()
-#
-# sdatelist = start.strip().split("/")
-# edatelist = end.strip().split("/")
-#
-# startDate = datetime.datetime(int(sdatelist[0]), int(sdatelist[1]), int(sdatelist[2]))
-# endDate = datetime.datetime(int(edatelist[0]), int(edatelist[1]), int(edatelist[2]))
+print("Enter the start date in YYYY/MM/DD followed by enter")
+start = input()
+print("Enter the end date in YYYY/MM/DD followed by enter ")
+end = input()
 
-startDate = datetime.datetime(2019, 5, 1)
-endDate = datetime.datetime(2019, 6, 15)
+sdatelist = start.strip().split("/")
+edatelist = end.strip().split("/")
+
+startDate = datetime.datetime(int(sdatelist[0]), int(sdatelist[1]), int(sdatelist[2]))
+endDate = datetime.datetime(int(edatelist[0]), int(edatelist[1]), int(edatelist[2]))
+
+# startDate = datetime.datetime(2019, 5, 1)
+# endDate = datetime.datetime(2019, 6, 15)
 
 if endDate.date() > datetime.date.today():
     raise Exception('\033[91m' + "Entered End Date is Greater than today" + '\033[0m')
@@ -268,7 +272,7 @@ def generateMonthReport(stat, polluant):
                     concentration = rows[0]
                     cclst.append(concentration)
                     # print(rows)
-        print(len(cclst[1:]), len(daylst[1:]))
+        # print(len(cclst[1:]), len(daylst[1:]))
         if len(cclst[1:]) != len(daylst[1:]):
             continue
         finalFile[station] = cclst[1:]
@@ -276,6 +280,100 @@ def generateMonthReport(stat, polluant):
             "output/" + polluant + "_" + startDate.strftime("%Y") + "_" + startDate.strftime("%m") + ".csv", sep=",",
             index=False)
         cclst.clear()
+
+
+def convertToExcel(filelst):
+    for files in filelst:
+        # for files in os.listdir("output"):
+        csvIn = pd.read_csv("output/" + files, delimiter=",")
+        excelout = pd.ExcelWriter("excel_output/" + files.split(".")[0] + ".xlsx", engine='xlsxwriter')
+        csvIn.to_excel(excelout, sheet_name="Original Data", index=False)
+        wbook = excelout.book
+        ws = wbook.add_worksheet('3h Average')
+        ws1 = wbook.add_worksheet('Regional Hour Max')
+        excelout.save()
+
+
+def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdbound, fourthbound, listduplicate):
+    # for excelFiles in os.listdir("excel_output"):
+    wb = openpyxl.load_workbook("excel_output/" + excelFiles)
+    rawdata = wb['Original Data']
+    avg_3h = wb['3h Average']
+    regionMax = wb['Regional Hour Max']
+    numberRow = rawdata.max_row
+    numberColumn = rawdata.max_column
+
+    PurpleFill = PatternFill(bgColor="9700d6")
+    RedFill = PatternFill(bgColor="EE1111")
+    YellowFill = PatternFill(bgColor="EECE00")
+    GreenFill = PatternFill(bgColor="00CE15")
+
+    # Fill colors
+    for sheets in wb.worksheets:
+        # copies row/column from old set
+        if sheets != wb['Original Data']:
+            for r in range(1, numberRow + 1):
+                for c in range(1, 3):
+                    if r is 1:
+                        for allC in range(1, numberColumn + 1):
+
+                            if sheets == avg_3h:
+                                sheets[get_column_letter(allC) + str(r)] \
+                                    = '=(\'Original Data\'!' + get_column_letter(allC) + str(r) + ')'
+
+                        if excelFiles.startswith(startStr):
+                            for i, p in enumerate(indexList):
+                                if sheets == regionMax:
+                                    # print(get_column_letter(i+3) + str(r), PM25_StationRegionlst[p])
+                                    sheets[get_column_letter(i + 3) + str(r)] = p
+
+                    if r is 2 or r is 3:
+                        for allC in range(3, numberColumn + 1):
+                            sheets[get_column_letter(allC) + str(r)] = ''
+                    sheets[get_column_letter(c) + str(r)] = '=(\'Original Data\'!' + get_column_letter(c) + str(
+                        r) + ')'
+
+        if excelFiles.startswith(startStr):
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='greaterThanOrEqual', formula=firstbound,
+                                                         stopIfTrue=True,
+                                                         fill=PurpleFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=secondbound,
+                                                         stopIfTrue=True,
+                                                         fill=RedFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=thirdbound,
+                                                         stopIfTrue=True,
+                                                         fill=YellowFill))
+
+            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
+                                              CellIsRule(operator='between', formula=fourthbound, stopIfTrue=True,
+                                                         fill=GreenFill))
+
+    for i in range(0, numberRow - 3):
+        for o in range(3, numberColumn + 1):
+            avg_3h[get_column_letter(o) + str(i + 4)] = \
+                '=IF((COUNTA(\'Original Data\'!' + get_column_letter(o) + str(i + 2) + ':' + get_column_letter(o) \
+                + str(i + 4) + '))>1,ROUND(AVERAGE(ROUND(\'Original Data\'!' + \
+                get_column_letter(o) + str(i + 2) + \
+                ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 3) + \
+                ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 4) + ',0)),0),\" \")'
+
+    if excelFiles.startswith(startStr):
+        for r in range(4, numberRow + 1):
+            for c, data in zip(range(3, len(indexList) + 3), listduplicate):
+                sData = data[0] + 3
+                endData = data[-1] + 3
+                regionMax[get_column_letter(c) + str(r)] = '=MAX(\'3h Average\'!' \
+                                                           + get_column_letter(sData) \
+                                                           + str(r) + ':' + \
+                                                           get_column_letter(endData) \
+                                                           + str(r) + ')'
+
+    wb.save("excel_output/" + excelFiles)
 
 
 print("Starting Request...")
@@ -287,178 +385,14 @@ print("50% done")
 generateMonthReport(NO2_stationIDlist, "NO2")
 generateMonthReport(O3_StationIDlist, "O3")
 generateMonthReport(PM25_StationIDlst, "PM25")
-
+convertToExcel(filelstCSV)
 print("75% done")
-# todo change to function
-
-
-def generateExcelReport():
-    for files in filelstCSV:
-        # for files in os.listdir("output"):
-        csvIn = pd.read_csv("output/" + files, delimiter=",")
-        excelout = pd.ExcelWriter("excel_output/" + files.split(".")[0] + ".xlsx", engine='xlsxwriter')
-        csvIn.to_excel(excelout, sheet_name="Original Data", index=False)
-        wb = excelout.book
-        ws = wb.add_worksheet('3h Average')
-        ws1 = wb.add_worksheet('Regional Hour Max')
-        excelout.save()
-
-    for excelFiles in filelstExcel:
-        # for excelFiles in os.listdir("excel_output"):
-        wb = openpyxl.load_workbook("excel_output/" + excelFiles)
-        rawdata = wb['Original Data']
-        avg_3h = wb['3h Average']
-        regionMax = wb['Regional Hour Max']
-        numberRow = rawdata.max_row
-        numberColumn = rawdata.max_column
-
-        PurpleFill = PatternFill(bgColor="9700d6")
-        RedFill = PatternFill(bgColor="EE1111")
-        YellowFill = PatternFill(bgColor="EECE00")
-        GreenFill = PatternFill(bgColor="00CE15")
-
-        # Fill colors
-        for sheets in wb.worksheets:
-            # copies row/column from old set
-            if sheets != wb['Original Data']:
-                for r in range(1, numberRow + 1):
-                    for c in range(1, 3):
-                        if r is 1:
-                            for allC in range(1, numberColumn + 1):
-
-                                if sheets == avg_3h:
-                                    sheets[get_column_letter(allC) + str(r)] = '=(\'Original Data\'!' + \
-                                                                               get_column_letter(allC) + str(r) + ')'
-                            ##
-                            if excelFiles.startswith("PM25"):  ##
-                                for i, p in enumerate(PM25indexlist):
-                                    if sheets == regionMax:
-                                        # print(get_column_letter(i+3) + str(r), PM25_StationRegionlst[p])
-                                        sheets[get_column_letter(i + 3) + str(r)] = p
-
-                            if excelFiles.startswith("O3"):  ##
-                                for i, p in enumerate(O3Indexlist):
-                                    if sheets == regionMax:
-                                        sheets[get_column_letter(i + 3) + str(r)] = p
-
-                            if excelFiles.startswith("NO2"):  ##
-                                for i, p in enumerate(NO2Indexlist):
-                                    if sheets == regionMax:
-                                        sheets[get_column_letter(i + 3) + str(r)] = p
-
-                        if r is 2 or r is 3:
-                            for allC in range(3, numberColumn + 1):
-                                sheets[get_column_letter(allC) + str(r)] = ''
-                        sheets[get_column_letter(c) + str(r)] = '=(\'Original Data\'!' + get_column_letter(c) + str(
-                            r) + ')'
-
-            if excelFiles.startswith("PM25"):
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='greaterThanOrEqual', formula=greaterOrEqual_PM25,
-                                                             stopIfTrue=True,
-                                                             fill=PurpleFill))
-
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='between', formula=secondHighest_PM25,
-                                                             stopIfTrue=True,
-                                                             fill=RedFill))
-
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='between', formula=thirdHighest_PM25,
-                                                             stopIfTrue=True,
-                                                             fill=YellowFill))
-
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='between', formula=lowest_PM25, stopIfTrue=True,
-                                                             fill=GreenFill))
-
-            if excelFiles.startswith("O3"):
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='greaterThanOrEqual', formula=greaterOrEqual_O3,
-                                                             stopIfTrue=True,
-                                                             fill=PurpleFill))
-
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='between', formula=secondHighest_O3,
-                                                             stopIfTrue=True,
-                                                             fill=RedFill))
-
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='between', formula=thirdHighest_O3,
-                                                             stopIfTrue=True,
-                                                             fill=YellowFill))
-
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='between', formula=lowest_O3, stopIfTrue=True,
-                                                             fill=GreenFill))
-
-            if excelFiles.startswith("NO2"):
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='greaterThanOrEqual', formula=greaterOrEqual_NO2,
-                                                             stopIfTrue=True,
-                                                             fill=PurpleFill))
-
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='between', formula=secondHighest_NO2,
-                                                             stopIfTrue=True,
-                                                             fill=RedFill))
-
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='between', formula=thirdHighest_NO2,
-                                                             stopIfTrue=True,
-                                                             fill=YellowFill))
-
-                sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                                  CellIsRule(operator='between', formula=lowest_NO2,
-                                                             stopIfTrue=True,
-                                                             fill=GreenFill))
-
-        for i in range(0, numberRow - 3):
-            for o in range(3, numberColumn + 1):
-                avg_3h[get_column_letter(o) + str(i + 4)] = '=IF((COUNTA(\'Original Data\'!' + get_column_letter(
-                    o) + str(
-                    i + 2) + ':' + get_column_letter(o) \
-                                                            + str(
-                    i + 4) + '))>1,ROUND(AVERAGE(ROUND(\'Original Data\'!' + \
-                                                            get_column_letter(o) + str(i + 2) + \
-                                                            ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(
-                    i + 3) + \
-                                                            ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(
-                    i + 4) + ',0)),0),\" \")'
-
-        # regional max
-        if excelFiles.startswith("PM25"):
-            for r in range(4, numberRow + 1):
-                for c, data in zip(range(3, len(PM25indexlist) + 3), PM25_lstDuplicate):
-                    sData = data[0] + 3
-                    endData = data[-1] + 3
-                    regionMax[get_column_letter(c) + str(r)] = '=MAX(\'3h Average\'!' \
-                                                               + get_column_letter(sData) \
-                                                               + str(r) + ':' + \
-                                                               get_column_letter(endData) \
-                                                               + str(r) + ')'
-
-        if excelFiles.startswith("O3"):
-            for r in range(2, numberRow + 1):
-                for c, data in zip(range(3, len(O3Indexlist) + 3), O3_listDuplicate):
-                    sData = data[0] + 3
-                    endData = data[-1] + 3
-                    regionMax[get_column_letter(c) + str(r)] = '=MAX(\'Original Data\'!' \
-                                                               + get_column_letter(sData) \
-                                                               + str(r) + ':' + \
-                                                               get_column_letter(endData) \
-                                                               + str(r) + ')'
-        if excelFiles.startswith("NO2"):
-            for r in range(2, numberRow + 1):
-                for c, data in zip(range(3, len(NO2Indexlist) + 3), NO2_listDuplicate):
-                    sData = data[0] + 3
-                    endData = data[-1] + 3
-                    regionMax[get_column_letter(c) + str(r)] = '=MAX(\'Original Data\'!' \
-                                                               + get_column_letter(sData) \
-                                                               + str(r) + ':' + \
-                                                               get_column_letter(endData) \
-                                                               + str(r) + ')'
-        wb.save("excel_output/" + excelFiles)
+Avg3handMax(filelstExcel[0], "O3", O3Indexlist, greaterOrEqual_O3, secondHighest_O3, thirdHighest_O3, lowest_O3,
+            O3_listDuplicate)
+Avg3handMax(filelstExcel[1], "NO2", NO2Indexlist, greaterOrEqual_NO2, secondHighest_NO2, thirdHighest_NO2, lowest_NO2,
+            NO2_listDuplicate)
+Avg3handMax(filelstExcel[2], "PM25", PM25indexlist, greaterOrEqual_PM25, secondHighest_PM25, thirdHighest_PM25,
+            lowest_PM25, PM25_lstDuplicate)
 
 e = time.time()
 print(e - s)
