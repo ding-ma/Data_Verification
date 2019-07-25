@@ -103,10 +103,6 @@ for i in range(delta.days + 1):
     listofDate.append((startDate + datetime.timedelta(days=i)).strftime("%Y%m%d"))
 
 
-stationsLstNO2 = open("stationsNO2.txt", "r").read().strip().split(",")
-stationsLstO3 = open("stationsO3.txt", "r").read().strip().split(",")
-
-
 def list_duplicates(seq):
     tally = defaultdict(list)
     for i, item in enumerate(seq):
@@ -127,22 +123,74 @@ for x in range(len(reader)):
     PM25_StationIDlst.append(pmID)
     PM25_StationRegionlst.append(pmRegion)
 
-tempset = set()
-regionDictionary = dict(zip(PM25_StationIDlst, PM25_StationRegionlst))
+tempsetPM25 = set()
+regionDictionaryPM25 = dict(zip(PM25_StationIDlst, PM25_StationRegionlst))
 for w in PM25_StationIDlst:
-    a = regionDictionary[w]
-    tempset.add(PM25_StationRegionlst.index(a))
+    a = regionDictionaryPM25[w]
+    tempsetPM25.add(PM25_StationRegionlst.index(a))
 
-PM25indexlist = list(sorted(tempset))
+PM25indexlist = list(sorted(tempsetPM25))
 
 PM25_lstDuplicate = []
 for region in list_duplicates(PM25_StationRegionlst):
     PM25_lstDuplicate.append(region[1])
 
-stationsLstPM25 = PM25_StationIDlst
 ###
 
+# O3
+O3File = open("StationO3.csv", "r")
+Reader_O3 = list(csv.reader(O3File))
+O3_StationIDlist = []
+O3_StationRegionlst = []
 
+for q in range(len(Reader_O3)):
+    l = Reader_O3[q]
+    o3ID = l[0]
+    o3Region = l[1]
+    O3_StationIDlist.append(o3ID)
+    O3_StationRegionlst.append(o3Region)
+
+tempsetO3 = set()
+regionDictO3 = dict(zip(O3_StationIDlist, O3_StationRegionlst))
+for e in O3_StationIDlist:
+    E = regionDictO3[e]
+    tempsetO3.add(O3_StationRegionlst.index(E))
+
+O3Indexlist = list(sorted(tempsetO3))
+
+O3_listDuplicate = []
+ll = []
+for r in list_duplicates(O3_StationRegionlst):
+    O3_listDuplicate.append(r[1])
+    ll.append([r[0]])
+print(ll)
+####
+
+NO2File = open("StationNO2.csv", "r")
+reader_NO2 = list(csv.reader(NO2File))
+NO2_stationIDlist = []
+NO2_stationRegionlst = []
+
+for a in range(len(reader_NO2)):
+    L = reader_NO2[a]
+    noID = L[0]
+    noRegion = L[1]
+    NO2_stationIDlist.append(noID)
+    NO2_stationRegionlst.append(noRegion)
+
+tempsetNO2 = set()
+regionDictNO2 = dict(zip(NO2_stationIDlist, NO2_stationRegionlst))
+for t in NO2_stationIDlist:
+    T = regionDictNO2[t]
+    tempsetNO2.add(NO2_stationRegionlst.index(T))
+
+NO2Indexlist = list(sorted(tempsetNO2))
+
+NO2_listDuplicate = []
+for y in list_duplicates(NO2_stationRegionlst):
+    NO2_listDuplicate.append(y[1])
+
+######
 stationlst = []
 datelst = []
 hourlst = []
@@ -244,16 +292,17 @@ def generateMonthReport(stat, polluant):
 
 
 print("Starting Request...")
-getPerMonth(stationsLstPM25, 1)
+getPerMonth(PM25_StationIDlst, 1)
 print("25% done")
-getPerMonth(stationsLstNO2, 2)
-getPerMonth(stationsLstO3, 3)
+getPerMonth(NO2_stationIDlist, 2)
+getPerMonth(O3_StationIDlist, 3)
 print("50% done")
-generateMonthReport(stationsLstNO2, "NO2")
-generateMonthReport(stationsLstO3, "O3")
+generateMonthReport(NO2_stationIDlist, "NO2")
+generateMonthReport(O3_StationIDlist, "O3")
 print("75% done")
-generateMonthReport(stationsLstPM25, "PM25")
+generateMonthReport(PM25_StationIDlst, "PM25")
 
+# todo change to function
 for files in filelstCSV:
     # for files in os.listdir("output"):
     csvIn = pd.read_csv("output/" + files, delimiter=",")
@@ -280,7 +329,6 @@ for excelFiles in filelstExcel:
 
     # Fill colors
     for sheets in wb.worksheets:
-
         # copies row/column from old set
         if sheets != wb['Original Data']:
             for r in range(1, numberRow + 1):
@@ -297,6 +345,17 @@ for excelFiles in filelstExcel:
                                 if sheets == regionMax:
                                     # print(get_column_letter(i+3) + str(r), PM25_StationRegionlst[p])
                                     sheets[get_column_letter(i + 3) + str(r)] = PM25_StationRegionlst[p]
+
+                        if excelFiles.startswith("O3"):  ##
+                            for i, p in enumerate(O3Indexlist):
+                                if sheets == regionMax:
+                                    sheets[get_column_letter(i + 3) + str(r)] = O3_StationRegionlst[p]
+
+                        if excelFiles.startswith("NO2"):  ##
+                            for i, p in enumerate(NO2Indexlist):
+                                if sheets == regionMax:
+                                    sheets[get_column_letter(i + 3) + str(r)] = NO2_stationRegionlst[p]
+
                     if r is 2 or r is 3:
                         for allC in range(3, numberColumn + 1):
                             sheets[get_column_letter(allC) + str(r)] = ''
@@ -385,6 +444,26 @@ for excelFiles in filelstExcel:
                                                            get_column_letter(endData) \
                                                            + str(r) + ')'
 
+    if excelFiles.startswith("O3"):
+        for r in range(2, numberRow + 1):
+            for c, data in zip(range(3, len(O3Indexlist) + 3), O3_listDuplicate):
+                sData = data[0] + 3
+                endData = data[-1] + 3
+                regionMax[get_column_letter(c) + str(r)] = '=MAX(\'Original Data\'!' \
+                                                           + get_column_letter(sData) \
+                                                           + str(r) + ':' + \
+                                                           get_column_letter(endData) \
+                                                           + str(r) + ')'
+    if excelFiles.startswith("NO2"):
+        for r in range(2, numberRow + 1):
+            for c, data in zip(range(3, len(NO2Indexlist) + 3), NO2_listDuplicate):
+                sData = data[0] + 3
+                endData = data[-1] + 3
+                regionMax[get_column_letter(c) + str(r)] = '=MAX(\'Original Data\'!' \
+                                                           + get_column_letter(sData) \
+                                                           + str(r) + ':' + \
+                                                           get_column_letter(endData) \
+                                                           + str(r) + ')'
     wb.save("excel_output/" + excelFiles)
 
 e = time.time()

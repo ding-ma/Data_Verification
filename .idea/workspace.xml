@@ -2,11 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="657cabed-1035-48bd-b7d3-cbd9d83678a7" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/StationNO2.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/StationO3.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/StationPM25.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/excelFormulaWriter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/excelFormulaWriter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/StationO3.csv" beforeDir="false" afterPath="$PROJECT_DIR$/src/StationO3.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/excel_output/NO2_2019_06.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/excel_output/NO2_2019_06.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/excel_output/O3_2019_06.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/excel_output/O3_2019_06.xlsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/excel_output/PM25_2019_06.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/excel_output/PM25_2019_06.xlsx" afterDir="false" />
@@ -26,8 +23,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/extractData.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="333">
-              <caret line="284" column="41" selection-start-line="284" selection-start-column="41" selection-end-line="284" selection-end-column="41" />
+            <state relative-caret-position="258">
+              <caret line="156" column="47" selection-start-line="156" selection-start-column="47" selection-end-line="156" selection-end-column="47" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -39,20 +36,20 @@
         <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/s.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="17">
-              <caret line="1" column="28" lean-forward="true" selection-start-line="1" selection-start-column="28" selection-end-line="1" selection-end-column="28" />
+              <caret line="1" column="28" selection-start-line="1" selection-start-column="28" selection-end-line="1" selection-end-column="28" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/StationPM25.csv">
-          <provider editor-type-id="csv-table-editor">
-            <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
-          </provider>
           <provider selected="true" editor-type-id="csv-text-editor">
-            <state relative-caret-position="339">
+            <state relative-caret-position="408">
               <caret line="24" column="4" selection-start-line="24" selection-end-line="24" selection-end-column="4" />
             </state>
+          </provider>
+          <provider editor-type-id="csv-table-editor">
+            <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
           </provider>
         </entry>
       </file>
@@ -91,12 +88,12 @@
         <option value="$PROJECT_DIR$/src/setup.bash" />
         <option value="$PROJECT_DIR$/src/lookupTable.py" />
         <option value="$PROJECT_DIR$/src/test.py" />
-        <option value="$PROJECT_DIR$/src/StationO3.csv" />
         <option value="$PROJECT_DIR$/src/StationPM25.csv" />
         <option value="$PROJECT_DIR$/src/multifile.py" />
         <option value="$PROJECT_DIR$/src/excelFormulaWriter.py" />
-        <option value="$PROJECT_DIR$/src/extractData.py" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/s.py" />
+        <option value="$PROJECT_DIR$/src/StationO3.csv" />
+        <option value="$PROJECT_DIR$/src/extractData.py" />
       </list>
     </option>
   </component>
@@ -111,6 +108,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -136,7 +134,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -271,9 +268,9 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.s" />
+        <item itemvalue="Python.extractData" />
         <item itemvalue="Python.excelFormulaWriter" />
         <item itemvalue="Python.multifile" />
-        <item itemvalue="Python.extractData" />
         <item itemvalue="Python.test (1)" />
       </list>
     </recent_temporary>
@@ -359,13 +356,20 @@
       <option name="project" value="LOCAL" />
       <updated>1563994770548</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="changing to csv to support region classification">
+      <created>1563998217955</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1563998217955</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1066" extended-state="6" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24973656" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24973656" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" weight="0.32982087" />
       <window_info id="Project Explorer" order="3" />
@@ -373,7 +377,7 @@
       <window_info id="Job Explorer" order="5" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3290461" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49894625" weight="0.19078243" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49894625" visible="true" weight="0.22186495" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.2818864" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -384,6 +388,7 @@
       <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.50105375" side_tool="true" weight="0.18971062" />
       <window_info anchor="bottom" id="Version Control" order="11" weight="0.3290461" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.3290461" />
+      <window_info anchor="bottom" id="Messages" order="13" visible="true" weight="0.17148982" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -466,7 +471,8 @@
     <MESSAGE value="conditional formatting works on all files" />
     <MESSAGE value="updated code so its easier to change conditional formatting" />
     <MESSAGE value="finally works for region max" />
-    <option name="LAST_COMMIT_MESSAGE" value="finally works for region max" />
+    <MESSAGE value="changing to csv to support region classification" />
+    <option name="LAST_COMMIT_MESSAGE" value="changing to csv to support region classification" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
@@ -500,10 +506,10 @@
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/monthTemplate.csv">
+      <provider selected="true" editor-type-id="csv-text-editor" />
       <provider editor-type-id="csv-table-editor">
         <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
       </provider>
-      <provider selected="true" editor-type-id="csv-text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/src/setup.bash">
       <provider selected="true" editor-type-id="text-editor">
@@ -577,26 +583,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/StationO3.csv">
-      <provider editor-type-id="csv-table-editor">
-        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
-      </provider>
-      <provider selected="true" editor-type-id="csv-text-editor" />
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/multifile.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="272">
           <caret line="16" column="27" lean-forward="true" selection-start-line="16" selection-start-column="27" selection-end-line="16" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/StationPM25.csv">
-      <provider editor-type-id="csv-table-editor">
-        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
-      </provider>
-      <provider selected="true" editor-type-id="csv-text-editor">
-        <state relative-caret-position="339">
-          <caret line="24" column="4" selection-start-line="24" selection-end-line="24" selection-end-column="4" />
         </state>
       </provider>
     </entry>
@@ -613,14 +603,34 @@
     <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/s.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="17">
-          <caret line="1" column="28" lean-forward="true" selection-start-line="1" selection-start-column="28" selection-end-line="1" selection-end-column="28" />
+          <caret line="1" column="28" selection-start-line="1" selection-start-column="28" selection-end-line="1" selection-end-column="28" />
         </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/StationPM25.csv">
+      <provider selected="true" editor-type-id="csv-text-editor">
+        <state relative-caret-position="408">
+          <caret line="24" column="4" selection-start-line="24" selection-end-line="24" selection-end-column="4" />
+        </state>
+      </provider>
+      <provider editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/StationO3.csv">
+      <provider selected="true" editor-type-id="csv-text-editor">
+        <state relative-caret-position="603">
+          <caret line="41" column="8" selection-start-line="41" selection-start-column="8" selection-end-line="41" selection-end-column="8" />
+        </state>
+      </provider>
+      <provider editor-type-id="csv-table-editor">
+        <state showInfoPanel="true" fixedHeaders="false" rowLines="3" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/extractData.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="333">
-          <caret line="284" column="41" selection-start-line="284" selection-start-column="41" selection-end-line="284" selection-end-column="41" />
+        <state relative-caret-position="258">
+          <caret line="156" column="47" selection-start-line="156" selection-start-column="47" selection-end-line="156" selection-end-column="47" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
