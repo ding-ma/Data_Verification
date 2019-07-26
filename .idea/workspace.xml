@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="657cabed-1035-48bd-b7d3-cbd9d83678a7" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/excel_output/NO2_2019_06.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/excel_output/O3_2019_06.xlsx" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/excel_output/PM25_2019_06.xlsx" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/extractData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extractData.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -290,7 +286,14 @@
       <option name="project" value="LOCAL" />
       <updated>1564080011649</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="project done">
+      <created>1564162963781</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1564162963781</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -338,7 +341,9 @@
     <MESSAGE value="everything is fixed now" />
     <MESSAGE value="backup before code cleaning" />
     <MESSAGE value="creates repo auto" />
-    <option name="LAST_COMMIT_MESSAGE" value="creates repo auto" />
+    <MESSAGE value="project done" />
+    <MESSAGE value="added color for finished product" />
+    <option name="LAST_COMMIT_MESSAGE" value="added color for finished product" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

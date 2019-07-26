@@ -2,7 +2,6 @@ import csv
 import datetime
 import os
 import shutil
-import time
 from collections import OrderedDict
 
 import openpyxl
@@ -43,7 +42,7 @@ lowest_NO2 = ['45', '59.9999']
 # end of NO2
 
 #####################################################
-s = time.time()
+
 path = os.getcwd()
 
 directories = ["O3", "PM25", "NO2"]
@@ -429,6 +428,5 @@ Avg3handMax(filelstExcel[1], "NO2", NO2Indexlist, greaterOrEqual_NO2, secondHigh
 Avg3handMax(filelstExcel[2], "PM25", PM25indexlist, greaterOrEqual_PM25, secondHighest_PM25, thirdHighest_PM25,
             lowest_PM25, PM25_lstDuplicate)
 
-e = time.time()
-print(e - s)
-print("Job done, see --> " + path + "/excel_output")
+print("\033[32m" + "100% :)")
+print("Job done, see --> " + path + "/excel_output" + '\033[0m')
