@@ -11,7 +11,7 @@ from openpyxl.styles import PatternFill
 from openpyxl.utils.cell import get_column_letter
 
 ######################################################
-# to change conditional formatting
+# to change conditional formatting, change the upper and lower bounds
 
 # PM2.5
 # above 50ppb
@@ -27,6 +27,7 @@ thirdHighest_PM25 = ['30', '34.9999']
 lowest_PM25 = ['25', '29.9999']
 # end of PM2.5
 
+
 # O3
 greaterOrEqual_O3 = ['100']
 secondHighest_O3 = ['85', '99.9999']
@@ -41,10 +42,12 @@ thirdHighest_NO2 = ['60', '74.9999']
 lowest_NO2 = ['45', '59.9999']
 # end of NO2
 
+# DO NOT TOUCH THE REST
 #####################################################
-
+# gets path of the file
 path = os.getcwd()
 
+# auto creates repo
 directories = ["O3", "PM25", "NO2"]
 if os.path.exists(path + "/monthfiles"):
     shutil.rmtree(path + "/monthfiles")
@@ -60,6 +63,7 @@ for i in directories:
     if not os.path.exists(path + "/monthfiles/" + i):
         os.mkdir(path + "/monthfiles/" + i)
 
+# makes a dictionnary to convert the NAPS and PB
 NAPS_PB_File = open("NAPS_PB.csv", "r")
 reader = csv.reader(NAPS_PB_File)
 converter = list(reader)
@@ -112,6 +116,7 @@ for i in range(delta.days + 1):
     listofDate.append((startDate + datetime.timedelta(days=i)).strftime("%Y%m%d"))
 
 
+# function to find the duplicate and returns the list with their name
 def list_duplicates(lst):
     odict = OrderedDict()
     returningOdict = OrderedDict()
@@ -141,7 +146,6 @@ PM25_sortedDuplicated = list_duplicates(PM25_StationRegionlst)
 
 PM25indexlist = list(PM25_sortedDuplicated.keys())
 PM25_lstDuplicate = list(PM25_sortedDuplicated.values())
-
 ###
 
 # O3
@@ -161,9 +165,9 @@ O3_sortedDuplicate = list_duplicates(O3_StationRegionlst)
 
 O3Indexlist = list(O3_sortedDuplicate.keys())
 O3_listDuplicate = list(O3_sortedDuplicate.values())
-
 ####
 
+# NO2
 NO2File = open("StationNO2.csv", "r")
 reader_NO2 = list(csv.reader(NO2File))
 NO2_stationIDlist = []
@@ -190,6 +194,7 @@ NO2lst = []
 PM25lst = []
 
 
+# gathers all the files in a montly base
 def getPerMonth(lst, polluant):
     for station in lst:
         stationID = PB_NAPS_dict[station]
@@ -245,6 +250,7 @@ def getPerMonth(lst, polluant):
         PM25lst.clear()
 
 
+# generates montly report based on station list (to keep order)
 def generateMonthReport(stat, polluant):
     template = open("monthTemplate.csv", "r")
     csvr = list(csv.reader(template))
@@ -313,27 +319,30 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
         if sheets != wb['Original Data']:
             for r in range(1, numberRow + 1):
                 for c in range(1, 3):
+                    # write the stations
                     if r is 1:
                         for allC in range(1, numberColumn + 1):
 
+                            # creates the 3h avg station row header
                             if sheets == avg_3h:
                                 sheets[get_column_letter(allC) + str(r)] \
                                     = '=(\'Original Data\'!' + get_column_letter(allC) + str(r) + ')'
 
+                        # write region max row header
                         if excelFiles.startswith(startStr):
                             for i, p in enumerate(indexList):
                                 if sheets == regionMax:
-                                    # print(get_column_letter(i+3) + str(r), PM25_StationRegionlst[p])
                                     sheets[get_column_letter(i + 3) + str(r)] = p
 
+                    # write time and date for both 3h avg and region max sheet
                     if r is 2 or r is 3:
                         for allC in range(3, numberColumn + 1):
                             sheets[get_column_letter(allC) + str(r)] = ''
                     sheets[get_column_letter(c) + str(r)] = '=(\'Original Data\'!' + get_column_letter(c) + str(
                         r) + ')'
 
+        # applies conditional formatting rule
         if excelFiles.startswith(startStr):
-
             sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
                                               CellIsRule(operator='greaterThanOrEqual', formula=firstbound,
                                                          stopIfTrue=True,
@@ -352,7 +361,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
                                               CellIsRule(operator='between', formula=fourthbound, stopIfTrue=True,
                                                          fill=GreenFill))
-
+    # formula to calculate 3h avg
     for i in range(0, numberRow - 3):
         for o in range(3, numberColumn + 1):
             avg_3h[get_column_letter(o) + str(i + 4)] = \
@@ -362,7 +371,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                 ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 3) + \
                 ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 4) + ',0)),0),\"\")'
 
-    # write hourly max
+    # calculate region max, this one has to be based on 3h avg
     if startStr == "PM25":
         regionMax[get_column_letter(len(indexList) + 4) + '1'] = "Hour QC Max"
         for r in range(4, numberRow + 1):
@@ -374,6 +383,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) \
                                                            + str(r) + ')'
+            # for the hourly max, it has to exclude the temis region
             for name in indexList:
                 if name == "Temis.":
                     temisLetter = get_column_letter(indexList.index("Temis.") + 3)
@@ -385,6 +395,8 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                         r) + ':' \
                           + get_column_letter(regionalMaxcolum) + str(r) + '))'
     else:
+        # NO2 and O3 are based on direct observation
+        # a bit of a hack but 3h avg are not needed for them so I just remove the sheet
         wb.remove_sheet(avg_3h)
         regionMax[get_column_letter(len(indexList) + 4) + '1'] = "Hour QC Max"
         for r in range(2, numberRow + 1):
@@ -396,11 +408,12 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) \
                                                            + str(r) + ')'
+            # for hourly max
             regionMax[get_column_letter(len(indexList) + 4) + str(r)] = '=MAX(' + get_column_letter(3) + str(r) + ':' \
                                                                         + get_column_letter(regionalMaxcolum) + str(
                 r) + ')'
 
-    # write daily max
+    # write daily max for all 3 file
     regionMax[get_column_letter(len(indexList) + 5) + '1'] = "Daily Max"
     for day in range(len(listofDate)):
         for r in range(4, numberRow + 1):
@@ -410,6 +423,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
     wb.save("excel_output/" + excelFiles)
 
 
+# these are the functions calls. It reduce the code bulkiness
 print("Starting Request...")
 getPerMonth(PM25_StationIDlst, 1)
 print("25% done")
