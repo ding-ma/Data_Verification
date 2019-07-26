@@ -91,9 +91,9 @@ edatelist = end.strip().split("/")
 
 startDate = datetime.datetime(int(sdatelist[0]), int(sdatelist[1]), int(sdatelist[2]))
 endDate = datetime.datetime(int(edatelist[0]), int(edatelist[1]), int(edatelist[2]))
-
+#
 # startDate = datetime.datetime(2019, 5, 1)
-# endDate = datetime.datetime(2019, 6, 15)
+# endDate = datetime.datetime(2019, 5, 15)
 
 if endDate.date() > datetime.date.today():
     raise Exception('\033[91m' + "Entered End Date is Greater than today" + '\033[0m')
@@ -285,7 +285,7 @@ def generateMonthReport(stat, polluant):
 def convertToExcel(filelst):
     for files in filelst:
         # for files in os.listdir("output"):
-        csvIn = pd.read_csv("output/" + files, delimiter=",")
+        csvIn = pd.read_csv("output/" + files, delimiter=",").replace(to_replace="-9.99", value="")
         excelout = pd.ExcelWriter("excel_output/" + files.split(".")[0] + ".xlsx", engine='xlsxwriter')
         csvIn.to_excel(excelout, sheet_name="Original Data", index=False)
         wbook = excelout.book
@@ -302,10 +302,10 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
     regionMax = wb['Regional Hour Max']
     numberRow = rawdata.max_row
     numberColumn = rawdata.max_column
-
+    regionalMaxcolum = len(indexList) + 2
     PurpleFill = PatternFill(bgColor="9700d6")
     RedFill = PatternFill(bgColor="EE1111")
-    YellowFill = PatternFill(bgColor="EECE00")
+    YellowFill = PatternFill(bgColor="f7ff59")
     GreenFill = PatternFill(bgColor="00CE15")
 
     # Fill colors
@@ -334,6 +334,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                         r) + ')'
 
         if excelFiles.startswith(startStr):
+
             sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
                                               CellIsRule(operator='greaterThanOrEqual', formula=firstbound,
                                                          stopIfTrue=True,
@@ -360,9 +361,11 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                 + str(i + 4) + '))>1,ROUND(AVERAGE(ROUND(\'Original Data\'!' + \
                 get_column_letter(o) + str(i + 2) + \
                 ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 3) + \
-                ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 4) + ',0)),0),\" \")'
+                ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 4) + ',0)),0),\"\")'
 
-    if excelFiles.startswith(startStr):
+    # write hourly max
+    if startStr == "PM25":
+        regionMax[get_column_letter(len(indexList) + 4) + '1'] = "Hour QC Max"
         for r in range(4, numberRow + 1):
             for c, data in zip(range(3, len(indexList) + 3), listduplicate):
                 sData = data[0] + 3
@@ -372,7 +375,39 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) \
                                                            + str(r) + ')'
+            for name in indexList:
+                if name == "Temis.":
+                    temisLetter = get_column_letter(indexList.index("Temis.") + 3)
+                    regionMax[get_column_letter(len(indexList) + 4) + str(r)] \
+                        = '=IF(MAX(' + get_column_letter(3) + str(r) + ':' \
+                          + get_column_letter(regionalMaxcolum) + str(r) + ')=' \
+                          + temisLetter + str(r) + ',LARGE(' + get_column_letter(3) + str(r) + ':' \
+                          + get_column_letter(regionalMaxcolum) + str(r) + ',2),MAX(' + get_column_letter(3) + str(
+                        r) + ':' \
+                          + get_column_letter(regionalMaxcolum) + str(r) + '))'
+    else:
+        wb.remove_sheet(avg_3h)
+        regionMax[get_column_letter(len(indexList) + 4) + '1'] = "Hour QC Max"
+        for r in range(2, numberRow + 1):
+            for c, data in zip(range(3, len(indexList) + 3), listduplicate):
+                sData = data[0] + 3
+                endData = data[-1] + 3
+                regionMax[get_column_letter(c) + str(r)] = '=MAX(\'Original Data\'!' \
+                                                           + get_column_letter(sData) \
+                                                           + str(r) + ':' + \
+                                                           get_column_letter(endData) \
+                                                           + str(r) + ')'
+            regionMax[get_column_letter(len(indexList) + 4) + str(r)] = '=MAX(' + get_column_letter(3) + str(r) + ':' \
+                                                                        + get_column_letter(regionalMaxcolum) + str(
+                r) + ')'
 
+    # write daily max
+    regionMax[get_column_letter(len(indexList) + 5) + '1'] = "Daily Max"
+    for day in range(len(listofDate)):
+        for r in range(4, numberRow + 1):
+            regionMax[get_column_letter(len(indexList) + 5) + str(2 + day * 24)] = '=MAX(' + get_column_letter(
+                len(indexList) + 4) + str(2 + day * 24) + ':' + get_column_letter(len(indexList) + 4) + str(
+                25 + day * 24) + ')'
     wb.save("excel_output/" + excelFiles)
 
 
@@ -381,14 +416,14 @@ getPerMonth(PM25_StationIDlst, 1)
 print("25% done")
 getPerMonth(NO2_stationIDlist, 2)
 getPerMonth(O3_StationIDlist, 3)
-print("50% done")
 generateMonthReport(NO2_stationIDlist, "NO2")
 generateMonthReport(O3_StationIDlist, "O3")
+print("50% done")
 generateMonthReport(PM25_StationIDlst, "PM25")
 convertToExcel(filelstCSV)
-print("75% done")
 Avg3handMax(filelstExcel[0], "O3", O3Indexlist, greaterOrEqual_O3, secondHighest_O3, thirdHighest_O3, lowest_O3,
             O3_listDuplicate)
+print("75% done")
 Avg3handMax(filelstExcel[1], "NO2", NO2Indexlist, greaterOrEqual_NO2, secondHighest_NO2, thirdHighest_NO2, lowest_NO2,
             NO2_listDuplicate)
 Avg3handMax(filelstExcel[2], "PM25", PM25indexlist, greaterOrEqual_PM25, secondHighest_PM25, thirdHighest_PM25,
