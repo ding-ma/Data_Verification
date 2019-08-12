@@ -15,21 +15,21 @@ from openpyxl.utils.cell import get_column_letter
 
 # PM2.5
 # above 50ppb
-greaterOrEqual_PM25 = ['50']
+greaterOrEqual_PM25 = ['50.00001']
 
 # between 35 and 50 ppb
-secondHighest_PM25 = ['35', '49.9999']
+secondHighest_PM25 = ['35.00001', '50']
 
 # between 30 and 35 ppb
-thirdHighest_PM25 = ['30', '34.9999']
+thirdHighest_PM25 = ['30', '35']
 
 # between 25 and 30 ppb
-lowest_PM25 = ['25', '29.9999']
+lowest_PM25 = ['25.00001', '29.9999']
 # end of PM2.5
 
 
 # O3
-greaterOrEqual_O3 = ['100']
+greaterOrEqual_O3 = ['100.']
 secondHighest_O3 = ['85', '99.9999']
 thirdHighest_O3 = ['72', '84.9999']
 lowest_O3 = ['62', '71.9999']
@@ -296,6 +296,7 @@ def convertToExcel(filelst):
         wbook = excelout.book
         ws = wbook.add_worksheet('3h Average')
         ws1 = wbook.add_worksheet('Regional Hour Max')
+        ws2 = wbook.add_worksheet('Everything Together')
         excelout.save()
 
 
