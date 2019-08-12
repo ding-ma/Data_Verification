@@ -42,6 +42,12 @@ thirdHighest_NO2 = ['60', '74.9999']
 lowest_NO2 = ['45', '59.9999']
 # end of NO2
 
+# Color codes, it is in HEX
+PurpleFill = PatternFill(bgColor="9700d6")
+RedFill = PatternFill(bgColor="EE1111")
+YellowFill = PatternFill(bgColor="f7ff59")
+GreenFill = PatternFill(bgColor="00CE15")
+WhiteFill = PatternFill(bgColor="ffffff")
 # DO NOT TOUCH THE REST
 #####################################################
 # gets path of the file
@@ -300,20 +306,43 @@ def convertToExcel(filelst):
         excelout.save()
 
 
+def addcolor(sheets, totalcolumns, numberRow, firstbound, secondbound, thirdbound, fourthbound):
+    sheets.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
+                                      CellIsRule(operator='greaterThanOrEqual', formula=firstbound,
+                                                 stopIfTrue=True,
+                                                 fill=PurpleFill))
+
+    sheets.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
+                                      CellIsRule(operator='between', formula=secondbound,
+                                                 stopIfTrue=True,
+                                                 fill=RedFill))
+
+    sheets.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
+                                      CellIsRule(operator='between', formula=thirdbound,
+                                                 stopIfTrue=True,
+                                                 fill=YellowFill))
+
+    sheets.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
+                                      CellIsRule(operator='between', formula=fourthbound, stopIfTrue=True,
+                                                 fill=GreenFill))
+
+
+# formula to calculate 3h avg
+
+
 def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdbound, fourthbound, listduplicate):
     # for excelFiles in os.listdir("excel_output"):
     wb = openpyxl.load_workbook("excel_output/" + excelFiles)
     rawdata = wb['Original Data']
     avg_3h = wb['3h Average']
     regionMax = wb['Regional Hour Max']
+    everything = wb['Everything Together']
     numberRow = rawdata.max_row
     numberColumn = rawdata.max_column
     regionalMaxcolum = len(indexList) + 2
-    PurpleFill = PatternFill(bgColor="9700d6")
-    RedFill = PatternFill(bgColor="EE1111")
-    YellowFill = PatternFill(bgColor="f7ff59")
-    GreenFill = PatternFill(bgColor="00CE15")
 
+    rawdata_delta = rawdata.max_column + 1
+    regional_delta = regionalMaxcolum + 2
     # Fill colors
     for sheets in wb.worksheets:
         # copies row/column from old set
@@ -344,24 +373,17 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
 
         # applies conditional formatting rule
         if excelFiles.startswith(startStr):
-            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='greaterThanOrEqual', formula=firstbound,
-                                                         stopIfTrue=True,
-                                                         fill=PurpleFill))
+            if sheets == everything:
+                if startStr == "PM25":
+                    addcolor(everything, 2 * rawdata_delta + regional_delta, numberRow, firstbound, secondbound,
+                             thirdbound, fourthbound)
+                if startStr == "NO2" or "O3":
+                    addcolor(everything, rawdata_delta + regional_delta, numberRow, firstbound, secondbound, thirdbound,
+                             fourthbound)
 
-            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='between', formula=secondbound,
-                                                         stopIfTrue=True,
-                                                         fill=RedFill))
-
-            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='between', formula=thirdbound,
-                                                         stopIfTrue=True,
-                                                         fill=YellowFill))
-
-            sheets.conditional_formatting.add('C2:' + get_column_letter(numberColumn) + str(numberRow),
-                                              CellIsRule(operator='between', formula=fourthbound, stopIfTrue=True,
-                                                         fill=GreenFill))
+            if sheets == (rawdata or avg_3h or regionMax):
+                addcolor(sheets, numberColumn, numberRow, firstbound, secondbound, thirdbound,
+                         fourthbound)
     # formula to calculate 3h avg
     for i in range(0, numberRow - 3):
         for o in range(3, numberColumn + 1):
@@ -395,6 +417,27 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                           + get_column_letter(regionalMaxcolum) + str(r) + ',2),MAX(' + get_column_letter(3) + str(
                         r) + ':' \
                           + get_column_letter(regionalMaxcolum) + str(r) + '))'
+
+        # This part of script rewrite all data into one sheet
+        for r in range(1, rawdata.max_row + 1):
+            for c in range(1, rawdata.max_column + 1):
+                everything[get_column_letter(c) + str(r)] = '=IF((\'Original Data\'!' + get_column_letter(c) + str(
+                    r) + ')="","",\'Original Data\'!' + get_column_letter(c) + str(r) + ')'
+
+        delta = rawdata.max_column + 1
+        for avg_C in range(3, avg_3h.max_column + 1):
+            for avg_R in range(1, avg_3h.max_row + 1):
+                everything[get_column_letter(avg_C + delta) + str(avg_R)] = '=IF((\'3h Average\'!' + get_column_letter(
+                    avg_C) + str(
+                    avg_R) + ')="","",\'3h Average\'!' + get_column_letter(avg_C) + str(avg_R) + ')'
+
+        avg3h_delta = avg_3h.max_column
+        for reg_C in range(3, regionMax.max_column + 1):
+            for reg_R in range(1, regionMax.max_row + 1):
+                everything[get_column_letter(reg_C + delta + avg3h_delta) + str(
+                    reg_R)] = '=IF((\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
+                    reg_R) + ')="","",\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + ')'
+
     else:
         # NO2 and O3 are based on direct observation
         # a bit of a hack but 3h avg are not needed for them so I just remove the sheet
@@ -413,6 +456,19 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             regionMax[get_column_letter(len(indexList) + 4) + str(r)] = '=MAX(' + get_column_letter(3) + str(r) + ':' \
                                                                         + get_column_letter(regionalMaxcolum) + str(
                 r) + ')'
+
+        # This part of script rewrite all data into one sheet
+        for r in range(1, rawdata.max_row + 1):
+            for c in range(1, rawdata.max_column + 1):
+                everything[get_column_letter(c) + str(r)] = '=IF((\'Original Data\'!' + get_column_letter(c) + str(
+                    r) + ')="","",\'Original Data\'!' + get_column_letter(c) + str(r) + ')'
+
+        delta = rawdata.max_column + 1
+        for reg_C in range(3, regionMax.max_column + 1):
+            for reg_R in range(1, regionMax.max_row + 1):
+                everything[get_column_letter(reg_C + delta) + str(
+                    reg_R)] = '=IF((\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
+                    reg_R) + ')="","",\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + ')'
 
     # write daily max for all 3 file
     regionMax[get_column_letter(len(indexList) + 5) + '1'] = "Daily Max"

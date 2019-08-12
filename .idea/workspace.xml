@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="657cabed-1035-48bd-b7d3-cbd9d83678a7" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/analysis.py" afterDir="false" />
+    <list default="true" id="657cabed-1035-48bd-b7d3-cbd9d83678a7" name="Default Changelist" comment="color code also works now.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/extractData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extractData.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -308,7 +308,14 @@
       <option name="project" value="LOCAL" />
       <updated>1564164546137</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="script now combines all 3 sheets into one">
+      <created>1565635817284</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1565635817284</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -359,7 +366,8 @@
     <MESSAGE value="project done" />
     <MESSAGE value="added color for finished product" />
     <MESSAGE value="added comments" />
-    <option name="LAST_COMMIT_MESSAGE" value="added comments" />
+    <MESSAGE value="script now combines all 3 sheets into one" />
+    <option name="LAST_COMMIT_MESSAGE" value="script now combines all 3 sheets into one" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
