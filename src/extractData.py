@@ -7,7 +7,7 @@ from collections import OrderedDict
 import openpyxl
 import pandas as pd
 from openpyxl.formatting.rule import CellIsRule
-from openpyxl.styles import PatternFill
+from openpyxl.styles import PatternFill, NamedStyle
 from openpyxl.utils.cell import get_column_letter
 
 ######################################################
@@ -47,7 +47,9 @@ PurpleFill = PatternFill(bgColor="9700d6")
 RedFill = PatternFill(bgColor="EE1111")
 YellowFill = PatternFill(bgColor="f7ff59")
 GreenFill = PatternFill(bgColor="00CE15")
-WhiteFill = PatternFill(bgColor="ffffff")
+
+# YYYY/MM/DD
+date_style = NamedStyle(name='datetime', number_format='YYYY/MM/DD')
 # DO NOT TOUCH THE REST
 #####################################################
 # gets path of the file
@@ -297,6 +299,8 @@ def convertToExcel(filelst):
     for files in filelst:
         # for files in os.listdir("output"):
         csvIn = pd.read_csv("output/" + files, delimiter=",").replace(to_replace="-9.99", value="")
+        # converts to datetime object
+        csvIn['Date(DD/MM/YYYY)'] = pd.to_datetime(csvIn['Date(DD/MM/YYYY)'], infer_datetime_format=True)
         excelout = pd.ExcelWriter("excel_output/" + files.split(".")[0] + ".xlsx", engine='xlsxwriter')
         csvIn.to_excel(excelout, sheet_name="Original Data", index=False)
         wbook = excelout.book
@@ -306,23 +310,23 @@ def convertToExcel(filelst):
         excelout.save()
 
 
-def addcolor(sheets, totalcolumns, numberRow, firstbound, secondbound, thirdbound, fourthbound):
-    sheets.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
+def addcolor(sheet, totalcolumns, numberRow, firstbound, secondbound, thirdbound, fourthbound):
+    sheet.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
                                       CellIsRule(operator='greaterThanOrEqual', formula=firstbound,
                                                  stopIfTrue=True,
                                                  fill=PurpleFill))
 
-    sheets.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
+    sheet.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
                                       CellIsRule(operator='between', formula=secondbound,
                                                  stopIfTrue=True,
                                                  fill=RedFill))
 
-    sheets.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
+    sheet.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
                                       CellIsRule(operator='between', formula=thirdbound,
                                                  stopIfTrue=True,
                                                  fill=YellowFill))
 
-    sheets.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
+    sheet.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
                                       CellIsRule(operator='between', formula=fourthbound, stopIfTrue=True,
                                                  fill=GreenFill))
 
@@ -345,6 +349,17 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
     regional_delta = regionalMaxcolum + 2
     # Fill colors
     for sheets in wb.worksheets:
+
+        # quebec24max = ScatterChart()
+        # quebec24max.title = "Quebec Hourly Region Max"
+        # quebec24max.style = 13
+        # quebec24max.y_axis = "Concentration"
+        # quebec24max.x_axis = "Date"
+        # regionmax24hdata = Reference(regionMax, min_col=len(indexList) + 4, min_row=2, max_col=numberColumn,
+        #                              max_row=len(indexList) + 4)
+        # quebec24max.add_data(regionmax24hdata, titles_from_data=True)
+
+        sheets.freeze_panes = "C2"
         # copies row/column from old set
         if sheets != wb['Original Data']:
             for r in range(1, numberRow + 1):
@@ -381,10 +396,11 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                     addcolor(everything, rawdata_delta + regional_delta, numberRow, firstbound, secondbound, thirdbound,
                              fourthbound)
 
-            if sheets == (rawdata or avg_3h or regionMax):
+            else:
                 addcolor(sheets, numberColumn, numberRow, firstbound, secondbound, thirdbound,
                          fourthbound)
-    # formula to calculate 3h avg
+
+    #rounds everything to integer
     for i in range(0, numberRow - 3):
         for o in range(3, numberColumn + 1):
             avg_3h[get_column_letter(o) + str(i + 4)] = \
@@ -418,25 +434,35 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                         r) + ':' \
                           + get_column_letter(regionalMaxcolum) + str(r) + '))'
 
+
         # This part of script rewrite all data into one sheet
         for r in range(1, rawdata.max_row + 1):
             for c in range(1, rawdata.max_column + 1):
+                #ROUND(\'Original Data\'!' + get_column_letter(c) + str(r) + ',0))
                 everything[get_column_letter(c) + str(r)] = '=IF((\'Original Data\'!' + get_column_letter(c) + str(
-                    r) + ')="","",\'Original Data\'!' + get_column_letter(c) + str(r) + ')'
+                    r) + ')="","",IF(ISNUMBER(\'Original Data\'!' + get_column_letter(c) + str(
+                    r) + '),ROUND(\'Original Data\'!' + get_column_letter(c) + str(
+                    r) + ',0),(\'Original Data\'!' + get_column_letter(c) + str(r) + ')))'
 
+        # 3h avgs copy
         delta = rawdata.max_column + 1
         for avg_C in range(3, avg_3h.max_column + 1):
             for avg_R in range(1, avg_3h.max_row + 1):
                 everything[get_column_letter(avg_C + delta) + str(avg_R)] = '=IF((\'3h Average\'!' + get_column_letter(
                     avg_C) + str(
-                    avg_R) + ')="","",\'3h Average\'!' + get_column_letter(avg_C) + str(avg_R) + ')'
+                    avg_R) + ')="","",IF(ISNUMBER(\'3h Average\'!' + get_column_letter(avg_C) + str(
+                    avg_R) + '),ROUND(\'3h Average\'!' + get_column_letter(avg_C) + str(
+                    avg_R) + ',0),(\'3h Average\'!' + get_column_letter(avg_C) + str(avg_R) + ')))'
 
+        # reg hour max copy
         avg3h_delta = avg_3h.max_column
         for reg_C in range(3, regionMax.max_column + 1):
             for reg_R in range(1, regionMax.max_row + 1):
                 everything[get_column_letter(reg_C + delta + avg3h_delta) + str(
                     reg_R)] = '=IF((\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
-                    reg_R) + ')="","",\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + ')'
+                    reg_R) + ')="","",IF(ISNUMBER(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
+                    reg_R) + '),ROUND(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
+                    reg_R) + ',0),(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + ')))'
 
     else:
         # NO2 and O3 are based on direct observation
@@ -447,36 +473,42 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for c, data in zip(range(3, len(indexList) + 3), listduplicate):
                 sData = data[0] + 3
                 endData = data[-1] + 3
-                regionMax[get_column_letter(c) + str(r)] = '=MAX(\'Original Data\'!' \
+                regionMax[get_column_letter(c) + str(r)] = '=ROUND(MAX(\'Original Data\'!' \
                                                            + get_column_letter(sData) \
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) \
-                                                           + str(r) + ')'
+                                                           + str(r) + '),0)'
             # for hourly max
-            regionMax[get_column_letter(len(indexList) + 4) + str(r)] = '=MAX(' + get_column_letter(3) + str(r) + ':' \
+            regionMax[get_column_letter(len(indexList) + 4) + str(r)] = '=ROUND(MAX(' + get_column_letter(3) + str(
+                r) + ':' \
                                                                         + get_column_letter(regionalMaxcolum) + str(
-                r) + ')'
+                r) + '),0)'
 
         # This part of script rewrite all data into one sheet
         for r in range(1, rawdata.max_row + 1):
             for c in range(1, rawdata.max_column + 1):
                 everything[get_column_letter(c) + str(r)] = '=IF((\'Original Data\'!' + get_column_letter(c) + str(
-                    r) + ')="","",\'Original Data\'!' + get_column_letter(c) + str(r) + ')'
+                    r) + ')="","",IF(ISNUMBER(\'Original Data\'!' + get_column_letter(c) + str(
+                    r) + '),ROUND(\'Original Data\'!' + get_column_letter(c) + str(
+                    r) + ',0),(\'Original Data\'!' + get_column_letter(c) + str(r) + ')))'
 
+        # reg hour max copy
         delta = rawdata.max_column + 1
         for reg_C in range(3, regionMax.max_column + 1):
             for reg_R in range(1, regionMax.max_row + 1):
                 everything[get_column_letter(reg_C + delta) + str(
                     reg_R)] = '=IF((\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
-                    reg_R) + ')="","",\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + ')'
+                    reg_R) + ')="","",IF(ISNUMBER(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
+                    reg_R) + '),ROUND(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
+                    reg_R) + ',0),(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + ')))'
 
     # write daily max for all 3 file
     regionMax[get_column_letter(len(indexList) + 5) + '1'] = "Daily Max"
     for day in range(len(listofDate)):
         for r in range(4, numberRow + 1):
-            regionMax[get_column_letter(len(indexList) + 5) + str(2 + day * 24)] = '=MAX(' + get_column_letter(
+            regionMax[get_column_letter(len(indexList) + 5) + str(2 + day * 24)] = '=ROUND(MAX(' + get_column_letter(
                 len(indexList) + 4) + str(2 + day * 24) + ':' + get_column_letter(len(indexList) + 4) + str(
-                25 + day * 24) + ')'
+                25 + day * 24) + '),0)'
     wb.save("excel_output/" + excelFiles)
 
 

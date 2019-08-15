@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="657cabed-1035-48bd-b7d3-cbd9d83678a7" name="Default Changelist" comment="color code also works now.">
+    <list default="true" id="657cabed-1035-48bd-b7d3-cbd9d83678a7" name="Default Changelist" comment="color code also works now. there is a bug where it adds the conditional formatting twice to the &quot;everything&quot; sheet">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/extractData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extractData.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -55,7 +54,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.analysis">
+  <component name="RunManager" selected="Python.s">
     <configuration name="analysis" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Data_Verification" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -163,9 +162,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.s" />
         <item itemvalue="Python.analysis" />
         <item itemvalue="Python.extractData" />
-        <item itemvalue="Python.s" />
         <item itemvalue="Python.sub" />
         <item itemvalue="Python.excelFormulaWriter" />
       </list>
@@ -315,7 +314,14 @@
       <option name="project" value="LOCAL" />
       <updated>1565635817284</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="color code also works now. there is a bug where it adds the conditional formatting twice to the &quot;everything&quot; sheet">
+      <created>1565638978469</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1565638978469</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -367,7 +373,8 @@
     <MESSAGE value="added color for finished product" />
     <MESSAGE value="added comments" />
     <MESSAGE value="script now combines all 3 sheets into one" />
-    <option name="LAST_COMMIT_MESSAGE" value="script now combines all 3 sheets into one" />
+    <MESSAGE value="color code also works now. there is a bug where it adds the conditional formatting twice to the &quot;everything&quot; sheet" />
+    <option name="LAST_COMMIT_MESSAGE" value="color code also works now. there is a bug where it adds the conditional formatting twice to the &quot;everything&quot; sheet" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
