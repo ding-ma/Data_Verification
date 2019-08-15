@@ -6,6 +6,11 @@ from collections import OrderedDict
 
 import openpyxl
 import pandas as pd
+from openpyxl.chart import (
+    ScatterChart,
+    Series,
+    Reference,
+)
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles import PatternFill, NamedStyle
 from openpyxl.utils.cell import get_column_letter
@@ -30,16 +35,16 @@ lowest_PM25 = ['25.00001', '29.9999']
 
 # O3
 greaterOrEqual_O3 = ['100.']
-secondHighest_O3 = ['85', '99.9999']
+secondHighest_O3 = ['82', '99.9999']
 thirdHighest_O3 = ['72', '84.9999']
 lowest_O3 = ['62', '71.9999']
 # end of O3
 
 # NO2
-greaterOrEqual_NO2 = ['90']
-secondHighest_NO2 = ['75', '89.9999']
-thirdHighest_NO2 = ['60', '74.9999']
-lowest_NO2 = ['45', '59.9999']
+greaterOrEqual_NO2 = ['90.00001']
+secondHighest_NO2 = ['75.00001', '90']
+thirdHighest_NO2 = ['60.00001', '75']
+lowest_NO2 = ['45.00001', '60']
 # end of NO2
 
 # Color codes, it is in HEX
@@ -347,18 +352,26 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
 
     rawdata_delta = rawdata.max_column + 1
     regional_delta = regionalMaxcolum + 2
-    # Fill colors
+
+    # creates graph for region max
+    # hourly reg max: get_column_letter(len(indexList) + 4) + str(r)
+
+    concentration_data = Reference(regionMax, min_col=len(indexList) + 4, min_row=1, max_row=numberRow)
+    dates_data = Reference(regionMax, min_col=1, min_row=2, max_col=2, max_row=numberRow)
+
+    qc24regionmax_chart = ScatterChart()
+    qc24regionmax_chart.title = "Quebec Monthly Max Graph"
+    qc24regionmax_chart.style = 2
+    qc24regionmax_chart.y_axis.title = "Concentration"
+    qc24regionmax_chart.x_axis.number_format = 'dd'
+    qc24regionmax_chart.x_axis.majorTimeUnit = "days"
+    qc24regionmax_chart.x_axis.title = "Date"
+
+    qc24hSeries = Series(concentration_data, dates_data, title_from_data=True)
+    qc24regionmax_chart.series.append(qc24hSeries)
+    regionMax.add_chart(qc24regionmax_chart, get_column_letter(len(indexList) + 6) + "1")
+
     for sheets in wb.worksheets:
-
-        # quebec24max = ScatterChart()
-        # quebec24max.title = "Quebec Hourly Region Max"
-        # quebec24max.style = 13
-        # quebec24max.y_axis = "Concentration"
-        # quebec24max.x_axis = "Date"
-        # regionmax24hdata = Reference(regionMax, min_col=len(indexList) + 4, min_row=2, max_col=numberColumn,
-        #                              max_row=len(indexList) + 4)
-        # quebec24max.add_data(regionmax24hdata, titles_from_data=True)
-
         sheets.freeze_panes = "C2"
         # copies row/column from old set
         if sheets != wb['Original Data']:
