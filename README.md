@@ -8,3 +8,6 @@ I was assigned to extract data from our database in order to construct a montly 
 
 # What I've Learned
 * I learned a lot about Pandas and how to avoid countless forloop to do data manipulations.
+
+# What I could've done differently
+Looking back at this project, I could've sperated the PM2.5 from O3 and NO2 because they required additional steps to process. Seperating the code into two modules can make things a lot cleaner to look at. I can also reference the colunm letter and number at the start of the for loop instead of doing "get_column_letter()" every time. 
