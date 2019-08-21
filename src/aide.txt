@@ -1,0 +1,60 @@
+How the program works:
+-Enter Start and End Date
+It will generate the corresponding monthly report for O3, PM2.5, and NO2.
+
+The program requires 2 packages:
+openpyxl, version: 2.6.2
+xlsxwriter, version 1.1.8
+
+To install the package do the following command:
+pip3 install openpyxl==2.6.2 --user
+pip3 install xlsxwriter==1.1.8 --user
+
+Those command are entered directly into the command line and press enter after one.
+The program has an alias associated in the home/~user/.profile.d/interactive/pre file with
+alias INFOSMOG="path/of/program && python3 -m extractData.py"
+
+To add/remove stations, open the appropriate config file.
+-StationNO2.csv for NO2 stations
+-StationO3.csv for O3 stations
+-StationPM25.csv for PM25 stations
+
+The format of the file goes as:
+ID:EC,Region.
+
+The region is used in the region hour max sheet. Make sure they are the same otherwise the program will not include that region into the calculations.
+The order which the stations appears in the csv file is **IMPORTANT**. The ouput file will follow that exact order. Make sure that when adding a station in an existing region, write it with the group, not at the end. 
+
+
+For example, in my StationPM25.csv, I would like to add DCBA station in the GRM region.
+Opening the file, you will see:
+
+CMVQ,GRM
+[...]
+CMSS,GRM
+CGTZ,GRM
+CMTI,Dru
+[...]
+CMPE,Lac
+
+The file with the station added could look like this if you want DCBA to appear before CGTZ:
+
+CMVQ,GRM
+[...]
+CMSS,GRM
+BCBA,GRM
+CGTZ,GRM
+CMTI,Dru
+[...]
+CMPE,Lac
+
+Note: There is no space separating the ID:EC and Region.
+
+Make sure that the station that you are adding also *exists* in the NAPS_PB. It will convert the ID:EC (4 character code)
+into a NAPS code (all digits). Currently, the file only contains Quebec stations but other province station can be added 
+as long as:
+1- The NAPS code exists in BD-AIQA
+2- The ID:EC has a conversion to NAPS. It can be user defined such as ABCD = 50119. the ID:EC is made up but the NAPS is real.
+
+
+The code of this project is situated at: https://github.com/ding-ma/Data_Verification
