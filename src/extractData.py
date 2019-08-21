@@ -430,11 +430,14 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for c, data in zip(range(3, len(indexList) + 3), listduplicate):
                 sData = data[0] + 3
                 endData = data[-1] + 3
-                regionMax[get_column_letter(c) + str(r)] = '=MAX(\'3h Average\'!' \
+                regionMax[get_column_letter(c) + str(r)] = '=IF(MAX(\'3h Average\'!' + get_column_letter(sData) \
+                                                           + str(r) + ':' + \
+                                                           get_column_letter(endData) \
+                                                           + str(r) + ')="","", MAX(\'3h Average\'!' \
                                                            + get_column_letter(sData) \
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) \
-                                                           + str(r) + ')'
+                                                           + str(r) + '))'
             # for the hourly max, it has to exclude the temis region
             for name in indexList:
                 if name == "Temis.":
@@ -486,11 +489,14 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for c, data in zip(range(3, len(indexList) + 3), listduplicate):
                 sData = data[0] + 3
                 endData = data[-1] + 3
-                regionMax[get_column_letter(c) + str(r)] = '=ROUND(MAX(\'Original Data\'!' \
+                regionMax[get_column_letter(c) + str(r)] = '=IF(MAXs(\'Original Data\'!' + get_column_letter(sData) \
+                                                           + str(r) + ':' + \
+                                                           get_column_letter(endData) + str(
+                    r) + ')="","",ROUND(MAX(\'Original Data\'!' \
                                                            + get_column_letter(sData) \
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) \
-                                                           + str(r) + '),0)'
+                                                           + str(r) + '),0))'
             # for hourly max
             regionMax[get_column_letter(len(indexList) + 4) + str(r)] = '=ROUND(MAX(' + get_column_letter(3) + str(
                 r) + ':' \
