@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="657cabed-1035-48bd-b7d3-cbd9d83678a7" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/analysis.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analysis.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/extractData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extractData.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -336,7 +335,21 @@
       <option name="project" value="LOCAL" />
       <updated>1565896508718</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="made changes so that regional hour max would not write 0 if the cell was empty">
+      <created>1566416317865</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1566416317865</updated>
+    </task>
+    <task id="LOCAL-00024" summary="wrote help file, deleted unecessairy python modules">
+      <created>1566416405606</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1566416405606</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -391,7 +404,9 @@
     <MESSAGE value="color code also works now. there is a bug where it adds the conditional formatting twice to the &quot;everything&quot; sheet" />
     <MESSAGE value="added rounding for the everything sheet, working on graph plots" />
     <MESSAGE value="graph generates good now" />
-    <option name="LAST_COMMIT_MESSAGE" value="graph generates good now" />
+    <MESSAGE value="made changes so that regional hour max would not write 0 if the cell was empty" />
+    <MESSAGE value="wrote help file, deleted unecessairy python modules" />
+    <option name="LAST_COMMIT_MESSAGE" value="wrote help file, deleted unecessairy python modules" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

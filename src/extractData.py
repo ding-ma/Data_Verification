@@ -405,11 +405,11 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                 if startStr == "PM25":
                     addcolor(everything, 2 * rawdata_delta + regional_delta, numberRow, firstbound, secondbound,
                              thirdbound, fourthbound)
-                if startStr == "NO2" or "O3":
+                if startStr == ("NO2" or "O3"):
                     addcolor(everything, rawdata_delta + regional_delta, numberRow, firstbound, secondbound, thirdbound,
                              fourthbound)
 
-            else:
+            if sheets != everything:
                 addcolor(sheets, numberColumn, numberRow, firstbound, secondbound, thirdbound,
                          fourthbound)
 
@@ -489,7 +489,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for c, data in zip(range(3, len(indexList) + 3), listduplicate):
                 sData = data[0] + 3
                 endData = data[-1] + 3
-                regionMax[get_column_letter(c) + str(r)] = '=IF(MAXs(\'Original Data\'!' + get_column_letter(sData) \
+                regionMax[get_column_letter(c) + str(r)] = '=IF(MAX(\'Original Data\'!' + get_column_letter(sData) \
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) + str(
                     r) + ')="","",ROUND(MAX(\'Original Data\'!' \
