@@ -418,10 +418,10 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
         for o in range(3, numberColumn + 1):
             avg_3h[get_column_letter(o) + str(i + 4)] = \
                 '=IF((COUNTA(\'Original Data\'!' + get_column_letter(o) + str(i + 2) + ':' + get_column_letter(o) \
-                + str(i + 4) + '))>1,ROUND(AVERAGE(ROUND(\'Original Data\'!' + \
+                + str(i + 4) + '))>1,AVERAGE(ROUND(\'Original Data\'!' + \
                 get_column_letter(o) + str(i + 2) + \
                 ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 3) + \
-                ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 4) + ',0)),0),\"\")'
+                ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 4) + ',0)),\"\")'
 
     # calculate region max, this one has to be based on 3h avg
     if startStr == "PM25":
@@ -456,9 +456,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for c in range(1, rawdata.max_column + 1):
                 #ROUND(\'Original Data\'!' + get_column_letter(c) + str(r) + ',0))
                 everything[get_column_letter(c) + str(r)] = '=IF((\'Original Data\'!' + get_column_letter(c) + str(
-                    r) + ')="","",IF(ISNUMBER(\'Original Data\'!' + get_column_letter(c) + str(
-                    r) + '),ROUND(\'Original Data\'!' + get_column_letter(c) + str(
-                    r) + ',0),(\'Original Data\'!' + get_column_letter(c) + str(r) + ')))'
+                    r) + ')="","",(\'Original Data\'!' + get_column_letter(c) + str(r) + '))'
 
         # 3h avgs copy
         delta = rawdata.max_column + 1
@@ -466,9 +464,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for avg_R in range(1, avg_3h.max_row + 1):
                 everything[get_column_letter(avg_C + delta) + str(avg_R)] = '=IF((\'3h Average\'!' + get_column_letter(
                     avg_C) + str(
-                    avg_R) + ')="","",IF(ISNUMBER(\'3h Average\'!' + get_column_letter(avg_C) + str(
-                    avg_R) + '),ROUND(\'3h Average\'!' + get_column_letter(avg_C) + str(
-                    avg_R) + ',0),(\'3h Average\'!' + get_column_letter(avg_C) + str(avg_R) + ')))'
+                    avg_R) + ')="","",(\'3h Average\'!' + get_column_letter(avg_C) + str(avg_R) + '))'
 
         # reg hour max copy
         avg3h_delta = avg_3h.max_column
@@ -476,9 +472,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for reg_R in range(1, regionMax.max_row + 1):
                 everything[get_column_letter(reg_C + delta + avg3h_delta) + str(
                     reg_R)] = '=IF((\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
-                    reg_R) + ')="","",IF(ISNUMBER(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
-                    reg_R) + '),ROUND(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
-                    reg_R) + ',0),(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + ')))'
+                    reg_R) + ')="","",(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + '))'
 
     else:
         # NO2 and O3 are based on direct observation
@@ -492,24 +486,22 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                 regionMax[get_column_letter(c) + str(r)] = '=IF(MAX(\'Original Data\'!' + get_column_letter(sData) \
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) + str(
-                    r) + ')="","",ROUND(MAX(\'Original Data\'!' \
+                    r) + ')="","",MAX(\'Original Data\'!' \
                                                            + get_column_letter(sData) \
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) \
-                                                           + str(r) + '),0))'
+                                                           + str(r) + '))'
             # for hourly max
-            regionMax[get_column_letter(len(indexList) + 4) + str(r)] = '=ROUND(MAX(' + get_column_letter(3) + str(
+            regionMax[get_column_letter(len(indexList) + 4) + str(r)] = '=MAX(' + get_column_letter(3) + str(
                 r) + ':' \
                                                                         + get_column_letter(regionalMaxcolum) + str(
-                r) + '),0)'
+                r) + ')'
 
         # This part of script rewrite all data into one sheet
         for r in range(1, rawdata.max_row + 1):
             for c in range(1, rawdata.max_column + 1):
                 everything[get_column_letter(c) + str(r)] = '=IF((\'Original Data\'!' + get_column_letter(c) + str(
-                    r) + ')="","",IF(ISNUMBER(\'Original Data\'!' + get_column_letter(c) + str(
-                    r) + '),ROUND(\'Original Data\'!' + get_column_letter(c) + str(
-                    r) + ',0),(\'Original Data\'!' + get_column_letter(c) + str(r) + ')))'
+                    r) + ')="","",(\'Original Data\'!' + get_column_letter(c) + str(r) + '))'
 
         # reg hour max copy
         delta = rawdata.max_column + 1
@@ -517,17 +509,15 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for reg_R in range(1, regionMax.max_row + 1):
                 everything[get_column_letter(reg_C + delta) + str(
                     reg_R)] = '=IF((\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
-                    reg_R) + ')="","",IF(ISNUMBER(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
-                    reg_R) + '),ROUND(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
-                    reg_R) + ',0),(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + ')))'
+                    reg_R) + ')="","",(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + '))'
 
     # write daily max for all 3 file
     regionMax[get_column_letter(len(indexList) + 5) + '1'] = "Daily Max"
     for day in range(len(listofDate)):
         for r in range(4, numberRow + 1):
-            regionMax[get_column_letter(len(indexList) + 5) + str(2 + day * 24)] = '=ROUND(MAX(' + get_column_letter(
+            regionMax[get_column_letter(len(indexList) + 5) + str(2 + day * 24)] = '=MAX(' + get_column_letter(
                 len(indexList) + 4) + str(2 + day * 24) + ':' + get_column_letter(len(indexList) + 4) + str(
-                25 + day * 24) + '),0)'
+                25 + day * 24) + ')'
     wb.save("excel_output/" + excelFiles)
 
 
