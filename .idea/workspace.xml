@@ -356,7 +356,14 @@
       <option name="project" value="LOCAL" />
       <updated>1566481566420</updated>
     </task>
-    <option name="localTasksCounter" value="26" />
+    <task id="LOCAL-00026" summary="updated some formulas">
+      <created>1566494257000</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1566494257000</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -389,7 +396,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
-    <MESSAGE value="trying to convert all the files into 1" />
     <MESSAGE value="able to read all files in directory and transform into one" />
     <MESSAGE value="everything works, going to optimize code" />
     <MESSAGE value="trying to convert code to python2 for CMC server" />
@@ -414,7 +420,8 @@
     <MESSAGE value="made changes so that regional hour max would not write 0 if the cell was empty" />
     <MESSAGE value="wrote help file, deleted unecessairy python modules" />
     <MESSAGE value="patched where PM25 would appply conditional formatting twice." />
-    <option name="LAST_COMMIT_MESSAGE" value="patched where PM25 would appply conditional formatting twice." />
+    <MESSAGE value="updated some formulas" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated some formulas" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />
