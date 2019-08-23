@@ -34,10 +34,10 @@ lowest_PM25 = ['25.00001', '29.9999']
 
 
 # O3
-greaterOrEqual_O3 = ['100,00001']
-secondHighest_O3 = ['82,00001', '100']
-thirdHighest_O3 = ['72,00001', '82']
-lowest_O3 = ['62,00001', '72']
+greaterOrEqual_O3 = ['100.']
+secondHighest_O3 = ['82', '99.9999']
+thirdHighest_O3 = ['72', '84.9999']
+lowest_O3 = ['62', '71.9999']
 # end of O3
 
 # NO2
@@ -95,24 +95,27 @@ PB_NAPS_dict = dict(zip(EC_Code, NAPS_ID))
 
 # unix path : /fs/home/fs1/ords/oth/airq_central/frc002/Data/CAS/Observations/Station/
 
-# User Input data.
+# CMVQs
+# 50126
 print("Enter the start date in YYYY/MM/DD followed by enter")
 start = input()
 print("Enter the end date in YYYY/MM/DD followed by enter ")
 end = input()
 
-startDate = datetime.datetime.strptime(start, "%Y/%m/%d")
-endDate = datetime.datetime.strptime(end, "%Y/%m/%d")
+sdatelist = start.strip().split("/")
+edatelist = end.strip().split("/")
+
+startDate = datetime.datetime(int(sdatelist[0]), int(sdatelist[1]), int(sdatelist[2]))
+endDate = datetime.datetime(int(edatelist[0]), int(edatelist[1]), int(edatelist[2]))
 #
-# startDate = datetime.datetime(2019, 8, 1)
-# endDate = datetime.datetime(2019, 8, 15)
+# startDate = datetime.datetime(2019, 5, 1)
+# endDate = datetime.datetime(2019, 5, 15)
 
 if endDate.date() > datetime.date.today():
     raise Exception('\033[91m' + "Entered End Date is Greater than today" + '\033[0m')
 
 delta = endDate - startDate
 
-# makes file name of what the user entered. It is to simplify later on.
 filelstCSV = ["O3_" + startDate.strftime("%Y") + "_" + startDate.strftime("%m") + ".csv",
               "NO2_" + startDate.strftime("%Y") + "_" + startDate.strftime("%m") + ".csv",
               "PM25_" + startDate.strftime("%Y") + "_" + startDate.strftime("%m") + ".csv"]
@@ -120,8 +123,8 @@ filelstCSV = ["O3_" + startDate.strftime("%Y") + "_" + startDate.strftime("%m") 
 filelstExcel = ["O3_" + startDate.strftime("%Y") + "_" + startDate.strftime("%m") + ".xlsx",
                 "NO2_" + startDate.strftime("%Y") + "_" + startDate.strftime("%m") + ".xlsx",
                 "PM25_" + startDate.strftime("%Y") + "_" + startDate.strftime("%m") + ".xlsx"]
-
 listofDate = []
+
 for i in range(delta.days + 1):
     listofDate.append((startDate + datetime.timedelta(days=i)).strftime("%Y%m%d"))
 
@@ -204,7 +207,7 @@ NO2lst = []
 PM25lst = []
 
 
-# gathers all the files in a montly base, this could later be converted into pandas function to increase runtime.
+# gathers all the files in a montly base
 def getPerMonth(lst, polluant):
     for station in lst:
         stationID = PB_NAPS_dict[station]
@@ -212,7 +215,6 @@ def getPerMonth(lst, polluant):
                 "/fs/home/fs1/ords/oth/airq_central/frc002/Data/CAS/Observations/Station/" + stationID) is True:
             for files in sorted(
                     os.listdir("/fs/home/fs1/ords/oth/airq_central/frc002/Data/CAS/Observations/Station/" + stationID)):
-                # appends all the data into one list for all days.
                 for days in listofDate:
                     if files.endswith(stationID + "_" + days + ".csv"):
                         f = open(
@@ -237,7 +239,6 @@ def getPerMonth(lst, polluant):
                                 PM25 = row[6]
                                 PM25lst.append(PM25)
 
-        # uses the list created into a datafram in order to export it as a CSV.
         if polluant is 1:
             df2 = pd.DataFrame(data={"Date(DD/MM/YYYY)": datelst, "Concentration": PM25lst, "Hour(UTC)": hourlst})
             df2.to_csv("monthfiles/PM25/" + startDate.strftime("%Y%m") + "_" + stationID + "PM25.csv", sep=",",
@@ -260,10 +261,9 @@ def getPerMonth(lst, polluant):
         NO2lst.clear()
         O3lst.clear()
         PM25lst.clear()
-        # repeats until it is done for all stations.
 
 
-# generates montly report based on station list (to keep order) and all the data that is extracted
+# generates montly report based on station list (to keep order)
 def generateMonthReport(stat, polluant):
     template = open("monthTemplate.csv", "r")
     csvr = list(csv.reader(template))
@@ -273,9 +273,11 @@ def generateMonthReport(stat, polluant):
         r = csvr[q]
         d = r[0]
         h = r[1]
-        daylst.append(d + " " + h)
+        daylst.append(d)
         hlst.append(h)
+
     cclst = []
+
     finalFile = pd.DataFrame(data={"Date(DD/MM/YYYY)": daylst[1:], "Hours(UTC)": hlst[1:]})
     for station in stat:
         stationID = PB_NAPS_dict[station]
@@ -287,6 +289,8 @@ def generateMonthReport(stat, polluant):
                     rows = CSVFiles[t]
                     concentration = rows[0]
                     cclst.append(concentration)
+                    # print(rows)
+        # print(len(cclst[1:]), len(daylst[1:]))
         if len(cclst[1:]) != len(daylst[1:]):
             continue
         finalFile[station] = cclst[1:]
@@ -353,7 +357,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
     # hourly reg max: get_column_letter(len(indexList) + 4) + str(r)
 
     concentration_data = Reference(regionMax, min_col=len(indexList) + 4, min_row=1, max_row=numberRow)
-    dates_data = Reference(regionMax, min_col=1, min_row=2, max_row=numberRow)
+    dates_data = Reference(regionMax, min_col=1, min_row=2, max_col=2, max_row=numberRow)
 
     qc24regionmax_chart = ScatterChart()
     qc24regionmax_chart.title = "Quebec Monthly Max Graph"
