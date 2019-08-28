@@ -97,19 +97,19 @@ PB_NAPS_dict = dict(zip(EC_Code, NAPS_ID))
 
 # CMVQs
 # 50126
-print("Enter the start date in YYYY/MM/DD followed by enter")
-start = input()
-print("Enter the end date in YYYY/MM/DD followed by enter ")
-end = input()
-
-sdatelist = start.strip().split("/")
-edatelist = end.strip().split("/")
-
-startDate = datetime.datetime(int(sdatelist[0]), int(sdatelist[1]), int(sdatelist[2]))
-endDate = datetime.datetime(int(edatelist[0]), int(edatelist[1]), int(edatelist[2]))
+# print("Enter the start date in YYYY/MM/DD followed by enter")
+# start = input()
+# print("Enter the end date in YYYY/MM/DD followed by enter ")
+# end = input()
 #
-# startDate = datetime.datetime(2019, 5, 1)
-# endDate = datetime.datetime(2019, 5, 15)
+# sdatelist = start.strip().split("/")
+# edatelist = end.strip().split("/")
+#
+# startDate = datetime.datetime(int(sdatelist[0]), int(sdatelist[1]), int(sdatelist[2]))
+# endDate = datetime.datetime(int(edatelist[0]), int(edatelist[1]), int(edatelist[2]))
+#
+startDate = datetime.datetime(2019, 8, 1)
+endDate = datetime.datetime(2019, 8, 15)
 
 if endDate.date() > datetime.date.today():
     raise Exception('\033[91m' + "Entered End Date is Greater than today" + '\033[0m')
@@ -273,7 +273,7 @@ def generateMonthReport(stat, polluant):
         r = csvr[q]
         d = r[0]
         h = r[1]
-        daylst.append(d)
+        daylst.append(d + " " + h)
         hlst.append(h)
 
     cclst = []
@@ -317,23 +317,23 @@ def convertToExcel(filelst):
 
 def addcolor(sheet, totalcolumns, numberRow, firstbound, secondbound, thirdbound, fourthbound):
     sheet.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
-                                      CellIsRule(operator='greaterThanOrEqual', formula=firstbound,
-                                                 stopIfTrue=True,
-                                                 fill=PurpleFill))
+                                     CellIsRule(operator='greaterThanOrEqual', formula=firstbound,
+                                                stopIfTrue=True,
+                                                fill=PurpleFill))
 
     sheet.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
-                                      CellIsRule(operator='between', formula=secondbound,
-                                                 stopIfTrue=True,
-                                                 fill=RedFill))
+                                     CellIsRule(operator='between', formula=secondbound,
+                                                stopIfTrue=True,
+                                                fill=RedFill))
 
     sheet.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
-                                      CellIsRule(operator='between', formula=thirdbound,
-                                                 stopIfTrue=True,
-                                                 fill=YellowFill))
+                                     CellIsRule(operator='between', formula=thirdbound,
+                                                stopIfTrue=True,
+                                                fill=YellowFill))
 
     sheet.conditional_formatting.add('C2:' + get_column_letter(totalcolumns) + str(numberRow),
-                                      CellIsRule(operator='between', formula=fourthbound, stopIfTrue=True,
-                                                 fill=GreenFill))
+                                     CellIsRule(operator='between', formula=fourthbound, stopIfTrue=True,
+                                                fill=GreenFill))
 
 
 # formula to calculate 3h avg
@@ -357,7 +357,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
     # hourly reg max: get_column_letter(len(indexList) + 4) + str(r)
 
     concentration_data = Reference(regionMax, min_col=len(indexList) + 4, min_row=1, max_row=numberRow)
-    dates_data = Reference(regionMax, min_col=1, min_row=2, max_col=2, max_row=numberRow)
+    dates_data = Reference(regionMax, min_col=1, min_row=2, max_row=numberRow)
 
     qc24regionmax_chart = ScatterChart()
     qc24regionmax_chart.title = "Quebec Monthly Max Graph"
@@ -413,7 +413,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                 addcolor(sheets, numberColumn, numberRow, firstbound, secondbound, thirdbound,
                          fourthbound)
 
-    #rounds everything to integer
+    # rounds everything to integer
     for i in range(0, numberRow - 3):
         for o in range(3, numberColumn + 1):
             avg_3h[get_column_letter(o) + str(i + 4)] = \
@@ -421,7 +421,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                 + str(i + 4) + '))>1,AVERAGE(ROUND(\'Original Data\'!' + \
                 get_column_letter(o) + str(i + 2) + \
                 ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 3) + \
-                ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 4) + ',0)),\"\")'
+                ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 4) + ',0)),-999)'
 
     # calculate region max, this one has to be based on 3h avg
     if startStr == "PM25":
@@ -430,14 +430,11 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for c, data in zip(range(3, len(indexList) + 3), listduplicate):
                 sData = data[0] + 3
                 endData = data[-1] + 3
-                regionMax[get_column_letter(c) + str(r)] = '=IF(MAX(\'3h Average\'!' + get_column_letter(sData) \
-                                                           + str(r) + ':' + \
-                                                           get_column_letter(endData) \
-                                                           + str(r) + ')="","", MAX(\'3h Average\'!' \
+                regionMax[get_column_letter(c) + str(r)] = '=MAX(\'3h Average\'!' \
                                                            + get_column_letter(sData) \
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) \
-                                                           + str(r) + '))'
+                                                           + str(r) + ')'
             # for the hourly max, it has to exclude the temis region
             for name in indexList:
                 if name == "Temis.":
@@ -450,13 +447,12 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
                         r) + ':' \
                           + get_column_letter(regionalMaxcolum) + str(r) + '))'
 
-
         # This part of script rewrite all data into one sheet
         for r in range(1, rawdata.max_row + 1):
             for c in range(1, rawdata.max_column + 1):
-                #ROUND(\'Original Data\'!' + get_column_letter(c) + str(r) + ',0))
+                # ROUND(\'Original Data\'!' + get_column_letter(c) + str(r) + ',0))
                 everything[get_column_letter(c) + str(r)] = '=IF((\'Original Data\'!' + get_column_letter(c) + str(
-                    r) + ')="","",(\'Original Data\'!' + get_column_letter(c) + str(r) + '))'
+                    r) + ')="",-999,(\'Original Data\'!' + get_column_letter(c) + str(r) + '))'
 
         # 3h avgs copy
         delta = rawdata.max_column + 1
@@ -464,15 +460,15 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for avg_R in range(1, avg_3h.max_row + 1):
                 everything[get_column_letter(avg_C + delta) + str(avg_R)] = '=IF((\'3h Average\'!' + get_column_letter(
                     avg_C) + str(
-                    avg_R) + ')="","",(\'3h Average\'!' + get_column_letter(avg_C) + str(avg_R) + '))'
+                    avg_R) + ')="",-999,(\'3h Average\'!' + get_column_letter(avg_C) + str(avg_R) + '))'
 
         # reg hour max copy
         avg3h_delta = avg_3h.max_column
-        for reg_C in range(3, regionMax.max_column + 1):
+        for reg_C in range(3, len(indexList) + 6):
             for reg_R in range(1, regionMax.max_row + 1):
                 everything[get_column_letter(reg_C + delta + avg3h_delta) + str(
                     reg_R)] = '=IF((\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
-                    reg_R) + ')="","",(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + '))'
+                    reg_R) + ')="",-999,(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + '))'
 
     else:
         # NO2 and O3 are based on direct observation
