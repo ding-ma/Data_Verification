@@ -4,9 +4,6 @@
     <list default="true" id="657cabed-1035-48bd-b7d3-cbd9d83678a7" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/extractData.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/extractData.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stationsNO2.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stationsO3.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/stationsPM25.txt" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -380,7 +377,14 @@
       <option name="project" value="LOCAL" />
       <updated>1566569275164</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="updated formula for PM25. going to do it for the rest">
+      <created>1567004771727</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1567004771727</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -413,7 +417,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="CHECK_CODE_CLEANUP_BEFORE_PROJECT_COMMIT" value="true" />
-    <MESSAGE value="trying to convert code to python2 for CMC server" />
     <MESSAGE value="reverted to csv brute output. managed to install packages on servers" />
     <MESSAGE value="now able to do 3h avg for excel file" />
     <MESSAGE value="updated to work only on current files" />
@@ -438,7 +441,8 @@
     <MESSAGE value="updated some formulas" />
     <MESSAGE value="something went wrong in the O3 excel sheet" />
     <MESSAGE value="reverted to old commit, excel function needs to be updated so that the max() doesnt write 0" />
-    <option name="LAST_COMMIT_MESSAGE" value="reverted to old commit, excel function needs to be updated so that the max() doesnt write 0" />
+    <MESSAGE value="updated formula for PM25. going to do it for the rest" />
+    <option name="LAST_COMMIT_MESSAGE" value="updated formula for PM25. going to do it for the rest" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REFORMAT_BEFORE_PROJECT_COMMIT" value="true" />
     <option name="REARRANGE_BEFORE_PROJECT_COMMIT" value="true" />

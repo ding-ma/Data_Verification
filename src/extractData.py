@@ -97,19 +97,16 @@ PB_NAPS_dict = dict(zip(EC_Code, NAPS_ID))
 
 # CMVQs
 # 50126
-# print("Enter the start date in YYYY/MM/DD followed by enter")
-# start = input()
-# print("Enter the end date in YYYY/MM/DD followed by enter ")
-# end = input()
-#
-# sdatelist = start.strip().split("/")
-# edatelist = end.strip().split("/")
-#
-# startDate = datetime.datetime(int(sdatelist[0]), int(sdatelist[1]), int(sdatelist[2]))
-# endDate = datetime.datetime(int(edatelist[0]), int(edatelist[1]), int(edatelist[2]))
-#
-startDate = datetime.datetime(2019, 8, 1)
-endDate = datetime.datetime(2019, 8, 15)
+print("Enter the start date in YYYY/MM/DD followed by enter")
+start = input()
+print("Enter the end date in YYYY/MM/DD followed by enter ")
+end = input()
+
+startDate = datetime.datetime.strptime(start, "%Y/%m/%d")
+endDate = datetime.datetime.strptime(end, "%Y/%m/%d")
+
+# startDate = datetime.datetime(2019, 8, 1)
+# endDate = datetime.datetime(2019, 8, 15)
 
 if endDate.date() > datetime.date.today():
     raise Exception('\033[91m' + "Entered End Date is Greater than today" + '\033[0m')
@@ -479,14 +476,11 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
             for c, data in zip(range(3, len(indexList) + 3), listduplicate):
                 sData = data[0] + 3
                 endData = data[-1] + 3
-                regionMax[get_column_letter(c) + str(r)] = '=IF(MAX(\'Original Data\'!' + get_column_letter(sData) \
-                                                           + str(r) + ':' + \
-                                                           get_column_letter(endData) + str(
-                    r) + ')="","",MAX(\'Original Data\'!' \
+                regionMax[get_column_letter(c) + str(r)] = '=MAX(\'Original Data\'!' \
                                                            + get_column_letter(sData) \
                                                            + str(r) + ':' + \
                                                            get_column_letter(endData) \
-                                                           + str(r) + '))'
+                                                           + str(r) + ')'
             # for hourly max
             regionMax[get_column_letter(len(indexList) + 4) + str(r)] = '=MAX(' + get_column_letter(3) + str(
                 r) + ':' \
@@ -497,15 +491,15 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
         for r in range(1, rawdata.max_row + 1):
             for c in range(1, rawdata.max_column + 1):
                 everything[get_column_letter(c) + str(r)] = '=IF((\'Original Data\'!' + get_column_letter(c) + str(
-                    r) + ')="","",(\'Original Data\'!' + get_column_letter(c) + str(r) + '))'
+                    r) + ')="",-999,(\'Original Data\'!' + get_column_letter(c) + str(r) + '))'
 
         # reg hour max copy
         delta = rawdata.max_column + 1
-        for reg_C in range(3, regionMax.max_column + 1):
+        for reg_C in range(3, len(indexList) + 6):
             for reg_R in range(1, regionMax.max_row + 1):
                 everything[get_column_letter(reg_C + delta) + str(
                     reg_R)] = '=IF((\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
-                    reg_R) + ')="","",(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + '))'
+                    reg_R) + ')="",-999,(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + '))'
 
     # write daily max for all 3 file
     regionMax[get_column_letter(len(indexList) + 5) + '1'] = "Daily Max"
