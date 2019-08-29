@@ -415,10 +415,8 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
         for o in range(3, numberColumn + 1):
             avg_3h[get_column_letter(o) + str(i + 4)] = \
                 '=IF((COUNTA(\'Original Data\'!' + get_column_letter(o) + str(i + 2) + ':' + get_column_letter(o) \
-                + str(i + 4) + '))>1,AVERAGE(ROUND(\'Original Data\'!' + \
-                get_column_letter(o) + str(i + 2) + \
-                ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 3) + \
-                ',0),ROUND(\'Original Data\'!' + get_column_letter(o) + str(i + 4) + ',0)),-999)'
+                + str(i + 4) + '))>1,ROUND(AVERAGE(\'Original Data\'!' + \
+                get_column_letter(o) + str(i + 2) + ':' + get_column_letter(o) + str(i + 4) + '),0),-999)'
 
     # calculate region max, this one has to be based on 3h avg
     if startStr == "PM25":
@@ -461,11 +459,13 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
 
         # reg hour max copy
         avg3h_delta = avg_3h.max_column
-        for reg_C in range(3, len(indexList) + 6):
+        for reg_C in range(3, len(indexList) + 5):
             for reg_R in range(1, regionMax.max_row + 1):
                 everything[get_column_letter(reg_C + delta + avg3h_delta) + str(
                     reg_R)] = '=IF((\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
                     reg_R) + ')="",-999,(\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(reg_R) + '))'
+
+
 
     else:
         # NO2 and O3 are based on direct observation
@@ -495,7 +495,7 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
 
         # reg hour max copy
         delta = rawdata.max_column + 1
-        for reg_C in range(3, len(indexList) + 6):
+        for reg_C in range(3, len(indexList) + 5):
             for reg_R in range(1, regionMax.max_row + 1):
                 everything[get_column_letter(reg_C + delta) + str(
                     reg_R)] = '=IF((\'Regional Hour Max\'!' + get_column_letter(reg_C) + str(
@@ -507,6 +507,15 @@ def Avg3handMax(excelFiles, startStr, indexList, firstbound, secondbound, thirdb
         for r in range(4, numberRow + 1):
             regionMax[get_column_letter(len(indexList) + 5) + str(2 + day * 24)] = '=MAX(' + get_column_letter(
                 len(indexList) + 4) + str(2 + day * 24) + ':' + get_column_letter(len(indexList) + 4) + str(
+                25 + day * 24) + ')'
+    # does it for everything sheet
+    dailyMaxLetter = get_column_letter(everything.max_column + 1)
+    qcHourMaxLetter = get_column_letter(everything.max_column)
+    everything[dailyMaxLetter + '1'] = "Daily Max"
+    for day in range(len(listofDate)):
+        for r in range(4, numberRow + 1):
+            everything[dailyMaxLetter + str(2 + day * 24)] = '=MAX(' + qcHourMaxLetter + str(
+                2 + day * 24) + ':' + qcHourMaxLetter + str(
                 25 + day * 24) + ')'
     wb.save("excel_output/" + excelFiles)
 
